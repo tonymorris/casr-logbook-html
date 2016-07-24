@@ -1,0 +1,134 @@
+html{
+  font-family: "Inconsolata";
+  color: black;
+}
+
+a {
+  text-decoration: none;
+}
+
+.casr-logbook {
+  max-width: 940px;
+  margin: 10px auto 10px auto;
+}
+
+.header {
+  text-align: center;
+}
+
+.subheader {
+  font-size: xx-small;
+  text-align: center;
+}
+
+.austlii {
+  font-style: italic;
+}
+
+.aviator {
+  background-color: #d3d3d3;
+}
+
+.personalinfo {
+  font-size: small;
+}
+
+.key {
+  font-weight: bold;
+}
+
+.entrytag {
+  font-size: small;
+}
+
+.briefingmetaheader {
+  font-weight: bold;
+}
+
+.briefingexpensename {
+  font-size: xx-small;
+  font-style: italic;
+}
+
+.tracklogsheader {
+  font-weight: bold;
+}
+
+.visualisationsheader {
+  font-weight: bold;
+}
+
+.imagesheader {
+  font-weight: bold;
+}
+
+.videosheader {
+  font-weight: bold;
+}
+
+.aircraftflightexpensesheader {
+  font-weight: bold;
+}
+
+.aircraftusageexpensename {
+  font-size: xx-small;
+  font-style: italic;
+}
+
+.aircraftlandingexpensename {
+  font-size: xx-small;
+  font-style: italic;
+}
+
+.simulatorflightexpensename {
+  font-size: xx-small;
+  font-style: italic;
+}
+
+.examexpensename {
+  font-size: xx-small;
+  font-style: italic;
+}
+
+.exammetaheader {
+  font-weight: bold;
+}
+
+.commandaviator {
+  font-style: italic;
+}
+
+.aircrafttype {
+  font-weight: bold;
+}
+
+.aircraftregistration {
+  font-weight: bold;
+}
+
+.aircraftengine {
+  font-weight: bold;
+}
+
+/* ------- */
+
+.title {
+  text-align: center;
+}
+
+.subtitle {
+  font-size: xx-small;
+  text-align: center;
+}
+
+.austlii {
+  font-style: italic;
+}
+
+.heading {
+  font-weight: bold;
+}
+
+.personalinfo {
+  font-size: small;
+}
