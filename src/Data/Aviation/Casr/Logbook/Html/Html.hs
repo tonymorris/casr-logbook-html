@@ -84,8 +84,9 @@ makeClassyPrisms ''ImageType
 data Image =
   Image {
     _imageuri :: String
-  , _imagename :: Maybe String
   , _imagetype :: ImageType
+  , _imagesource :: Maybe String
+  , _imagename :: Maybe String
   } deriving (Eq, Ord, Show)
   
 makeClassy ''Image
@@ -103,8 +104,8 @@ data TrackLog =
   TrackLog {
     _trackloguri :: String
   , _tracklogtype :: TrackLogType
-  , _tracklogsource :: (Maybe String)
-  , _tracklogname :: (Maybe String)
+  , _tracklogsource :: Maybe String
+  , _tracklogname :: Maybe String
   } deriving (Eq, Ord, Show)
   
 makeClassy ''TrackLog
@@ -117,24 +118,37 @@ data VideoType =
   
 makeClassyPrisms ''VideoType
 
+linkVideoType ::
+  VideoType
+  -> String
+  -> String
+linkVideoType YouTube u =
+  "https://www.youtube.com/watch?v=" ++ u
+linkVideoType Vimeo u =
+  "https://bambuser.com/v/" ++ u 
+linkVideoType Bambuser u =
+  "https://vimeo.com/" ++ u
+
+iframeVideoType ::
+  VideoType
+  -> String
+  -> String
+iframeVideoType YouTube u =
+  "http://www.youtube.com/embed/" ++ u ++ "?autohide=1&amp;cc_load_policy=1&amp;color=white&amp;controls=1&amp;disablekb=0&amp;fs=1&amp;iv_load_policy=0&amp;loop=0&amp;modestbranding=1&amp;rel=0&amp;showinfo=0"
+iframeVideoType Vimeo u =
+  "https://player.vimeo.com/video/" ++ u
+iframeVideoType Bambuser u =
+  "https://embed.bambuser.com/broadcast/" ++ u ++ "?chat=1&amp;mute=0"
+
 data Video =
   Video {
     _videouri :: String
-  , _videoname :: Maybe String
   , _videotype :: VideoType
+  , _videosource :: Maybe String
+  , _videoname :: Maybe String
   } deriving (Eq, Ord, Show)
 
 makeClassy ''Video
-
-data Expense =
-  Expense {
-    _expensecents :: Int
-  , _expensetime :: Maybe TimeAmount
-  , _expensedate :: Day
-  , _expensename :: String
-  } deriving (Eq, Ord, Show)
-
-makeClassy ''Expense
 
 data AircraftFlightMeta =
   AircraftFlightMeta {
@@ -380,8 +394,9 @@ straightandlevelMeta =
     [
       Video
         "13BVior4VmY"
-        (Just "Head camera")
         YouTube
+        Nothing
+        (Just "Head camera")
     ]
     [
       vhldoUnderInstruction
@@ -434,8 +449,9 @@ climbinganddescendingMeta =
     [
       Video
         "8tZ8kxsVz6E"
-        (Just "Head camera")
         YouTube
+        Nothing
+        (Just "Head camera")
     ]
     [
       vhldoUnderInstruction
@@ -615,50 +631,61 @@ circuits1Meta =
     [
       Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082411.jpg"
-        Nothing
         Jpg
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082856.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082902.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082905.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_083348.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_083352.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_083353.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_084902.jpg"
-        Nothing
         Jpg 
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_084906.jpg"
-        Nothing
         Jpg 
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_084908.jpg"
-        Nothing
         Jpg      
+        Nothing
+        Nothing
     ]
     [
       Video
         "gz8Ivcjas9o"
-        (Just "Head camera")
         YouTube
+        Nothing
+        (Just "Head camera")
     ]
     [
       flightoneC172AircraftUsageExpense "VH-AFR dual/ circuits #1"
@@ -700,50 +727,61 @@ circuits2Meta =
     [
       Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082411.jpg"
-        Nothing
         Jpg
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082856.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082902.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082905.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_083348.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_083352.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_083353.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_084902.jpg"
-        Nothing
         Jpg 
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_084906.jpg"
-        Nothing
         Jpg 
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_084908.jpg"
-        Nothing
         Jpg      
+        Nothing
+        Nothing
     ]
     [
       Video
         "gz8Ivcjas9o"
-        (Just "Head camera")
         YouTube
+        Nothing
+        (Just "Head camera")
     ]
     [
       vhafrUnderInstruction
@@ -825,8 +863,9 @@ circuits4Meta =
     [
       Video
         "e7UcjgxOmDw"
-        (Just "Head camera")
         YouTube
+        Nothing
+        (Just "Head camera")
     ]
     [
       flightoneC172AircraftUsageExpense "VH-AFR circuits #4"
@@ -878,74 +917,91 @@ circuitemergencies1Meta =
     [
       Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090347.jpg"
-        Nothing
         Jpg
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090348.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090351.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090409.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090411.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090421.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090423.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090432.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090436.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090441.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090446.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090452.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090454.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090459.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090501.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing
     , Image
         "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160218-vh-afr/20160218_090502.jpg"
-        Nothing
         Jpg            
+        Nothing
+        Nothing        
     ]
     [
       Video
         "EO4D4zFnpIU"
-        (Just "Head camera")
         YouTube
+        Nothing
+        (Just "Head camera")
     ]
     [
       vhafrUnderInstruction
@@ -1014,8 +1070,9 @@ circuitemergencies2Meta =
     [
       Video
         "jWUijREg4aE"
-        (Just "Head camera")
         YouTube
+        Nothing
+        (Just "Head camera")
     ]
     [
       vhafrUnderInstruction
@@ -1084,8 +1141,9 @@ circuitemergencies3Meta =
     [
       Video
         "RNiYu3ZsfZw"
-        (Just "Forward camera")
         YouTube
+        Nothing
+        (Just "Forward camera")
     ]
     [
       vhzwyUnderInstruction
@@ -1283,8 +1341,9 @@ circuitssolocheck1Meta =
     [
       Video
         "UR1IkF5RSh4"
-        (Just "Forward camera")
         YouTube
+        Nothing
+        (Just "Forward camera")
     ]
     [
       flightoneC172AircraftUsageExpense "VH-AFR Under Instruction/solo"
@@ -1325,8 +1384,9 @@ circuitssolo1Meta =
     [
       Video
         "UR1IkF5RSh4"
-        (Just "Forward camera")
         YouTube
+        Nothing
+        (Just "Forward camera")
     ]
     [
       flightoneC172AircraftUsageExpense "VH-AFR Under Instruction/solo"
@@ -1455,12 +1515,14 @@ practiceforcedlandings1Meta =
     [
       Video
         "o1dx3hZuov0"
-        (Just "Forward camera")
         YouTube
+        Nothing
+        (Just "Forward camera")
     , Video
         "6250595"
-        (Just "Live Stream")
         Bambuser
+        Nothing
+        (Just "Live Stream")
     ]
     [
       vhafrUnderInstruction
@@ -1503,12 +1565,14 @@ practiceforcedlandings2Meta =
     [
       Video
         "vw9KjjqkOEg"
-        (Just "Forward camera")
         YouTube
+        Nothing
+        (Just "Forward camera")
     , Video
         "6258610"
-        (Just "Live Stream")
         Bambuser
+        Nothing
+        (Just "Live Stream")
     ]
     [
       vhvvoUnderInstruction
@@ -1561,12 +1625,14 @@ steepturnsMeta =
     [
       Video
         "ZEABSxrN4xM"
-        (Just "Forward camera")
         YouTube
+        Nothing
+        (Just "Forward camera")
     , Video
         "6267124"
-        (Just "Live Stream")
         Bambuser
+        Nothing
+        (Just "Live Stream")
     ]
     [
       flightoneC172AircraftUsageExpense "VH-VVO Under Instruction - steep turns"
@@ -1631,8 +1697,9 @@ steepturnsandsideslippingMeta =
     [
       Video
         "6288135"
-        (Just "Live Stream")
         Bambuser
+        Nothing
+        (Just "Live Stream")
     ]
     [
       vhvvoUnderInstruction
@@ -1675,12 +1742,14 @@ circuitscrosswind2Meta =
     [
       Video
         "OYuR7E1xjyg"
+        YouTube
+        Nothing            
         (Just "Forward camera")
-        YouTube            
     , Video
         "6300417"
-        (Just "Live stream")
         Bambuser
+        Nothing
+        (Just "Live stream")
     ]
     [
       flightoneC172AircraftUsageExpense "VH-VVO x-wind circuits"
@@ -1723,8 +1792,9 @@ areasolocheckMeta =
     [
       Video
         "6318524"
-        (Just "Live stream")
         Bambuser
+        Nothing
+        (Just "Live stream")
     ]
     [
       flightoneC172AircraftUsageExpense "VH-VVO Under Instruction (DS)"
@@ -1776,16 +1846,19 @@ areasolo1Meta =
     [
       Video
         "zF51UQ377E8"
+        YouTube  
+        Nothing          
         (Just "Forward camera -- Eastern Departure")
-        YouTube            
     , Video
         "AWLegaBJGFs"
+        YouTube
+        Nothing            
         (Just "Forward camera -- Practice Forced Landings")
-        YouTube            
     , Video
         "6320415"
-        (Just "Live stream")
         Bambuser
+        Nothing
+        (Just "Live stream")
     ]
     [
       flightoneC172AircraftUsageExpense "VH-VVO area solo"
@@ -1837,8 +1910,9 @@ areasolo2Meta =
     [
       Video
         "G0-RoTxRsGw"
+        YouTube
+        Nothing
         (Just "Eastern Arrival, fly-over")
-        YouTube        
     ]
     [
       flightoneC172AircraftUsageExpense "VH-VVO 2nd area solo"
@@ -2082,7 +2156,47 @@ test1' =
       hr_ []
       htmlVisualisation turning (Doarama "595690" "6rAdypE" Nothing)
       hr_ []
-      htmlImage turning (Image "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082411.jpg" Nothing Jpg)
+      htmlImage turning (Image "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082411.jpg" Jpg Nothing Nothing)
+      hr_ []
+      htmlTrackLog turning (TrackLog "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/20151218-vh-ldo.gpx" Gpx (Just "Garmin 62s") (Just "test tracklog"))
+      hr_ []
+      htmlTrackLog turning (TrackLog "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20151218-vh-ldo.png" (ImageTrackLog Png) (Just "gpsvisualizer.com") (Just "test image tracklog"))
+      hr_ []
+      htmlVideo turning (Video "13BVior4VmY" YouTube (Just "a source") (Just " a name"))
+
+test2' :: Html ()
+test2' =
+  htmlAircraftFlightMeta
+    turning $
+      AircraftFlightMeta
+        [
+          TrackLog "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20151218-vh-ldo.png" (ImageTrackLog Png) (Just "gpsvisualizer.com") (Just "test image tracklog")
+        ]
+
+        [
+          Doarama "595690" "6rAdypE" Nothing
+        ]
+
+        [
+          Image "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082411.jpg" Jpg Nothing Nothing
+        ]
+
+        [
+          Video "13BVior4VmY" YouTube (Just "a source") (Just " a name")
+        ]
+
+        [
+          ExpenseAircraftUsage (AircraftUsageExpense 34107 "usage expense")
+        , ExpenseAircraftLanding (AircraftLandingExpense 43177 "landing expense")
+        ]
+
+test2 :: Html ()
+test2 =
+  doctypehtml_ (do head_ (title_ "title for test2"); body_ test2')
+
+writetest2 :: IO ()
+writetest2 =
+  renderToFile "/tmp/y.html" test2
 
 htmlAircraftUsageExpense ::
   AircraftFlight
@@ -2180,7 +2294,7 @@ htmlVisualisation ::
   -> Visualisation
   -> Html ()
 htmlVisualisation _ (Doarama i e n) =
-  let n' = fromMaybe "doarama visualisation" n
+  let n' = fromMaybe "Visualisation" n
   in  do  a_ [href_ ("http://doarama.com/view/" <> Text.pack i)] $ 
             span_ [class_ "Visualisation_name"] (fromString n')
           p_ (iframe_ [src_ ("http://www.doarama.com/embed?k=" <> Text.pack e), width_ "560", height_ "315", termWith "allowfullscreen" [] "allowfullscreen"] "")
@@ -2199,11 +2313,12 @@ htmlImage ::
   AircraftFlight
   -> Image
   -> Html ()
-htmlImage _ (Image u n t) =
+htmlImage _ (Image u t s n) =
   let u' = fromString u      
       n' = fromMaybe ("Image (" ++ strImageType t ++ ")") n
-  in  a_ [href_ u'] $
-        img_ [src_ u', width_ "120", alt_ (Text.pack n')]
+  in  do  a_ [href_ u'] $
+            img_ [src_ u', width_ "120", alt_ (Text.pack n')]
+          maybe mempty (\s' -> span_ [] (fromString ("Image source: " ++ s'))) s
 
 strTrackLogType ::
   TrackLogType
@@ -2217,97 +2332,65 @@ strTrackLogType Kmz =
 strTrackLogType (ImageTrackLog i) =
   strImageType i
 
-{-
-ase ttype of 
-            ImageLog _ ->              
-                [
-                  "  * "
-                , case n of
-                    Nothing ->
-                      "*" ++ t ++ "*"
-                    Just n' ->
-                      n'
-                , "\n\n    "
-                , "<a href=\""
-                , uri
-                , "\"><img src=\""
-                , uri
-                , "\" width=\"360\" alt=\""
-                , fromMaybe t name
-                , "\"></a>"
-                ]
-            _ ->              
-                [
-                  "  * "
-                , case n of
-                    Nothing ->
-                      ""
-                    Just n' ->
-                      n' ++ ": "
-                , "["
-                , t
-                , "]("
-                , uri
-                , ")"
-                -}
-
 htmlTrackLog ::
   AircraftFlight
   -> TrackLog
   -> Html ()
-htmlTrackLog fl (TrackLog u t s n) =
-  let r = ""
-  in  undefined                 
+htmlTrackLog _ (TrackLog u t s n) =
+  let u' = fromString u
+      n' = fromMaybe (strTrackLogType t) n
+      o = do  fromString n'
+              maybe "" (\q -> span_ [] (fromString (" from " ++ q))) s
+  in  do  a_ [href_ u'] o
+          case t of 
+            ImageTrackLog _ ->
+              do  br_ []
+                  a_ [href_ u'] $
+                    img_ [src_ u', width_ "360", alt_ (fromString n')]
+            _ ->
+              mempty
 
-{-
+strVideoType ::
+  VideoType
+  -> String
+strVideoType YouTube =
+  "youtube"
+strVideoType Vimeo =
+  "vimeo"
+strVideoType Bambuser =
+  "bambuser"
 
-data TrackLog =
-  TrackLog {
-    _trackloguri :: String
-  , _tracklogtype :: TrackLogType
-  , _tracklogsource :: (Maybe String)
-  , _tracklogname :: (Maybe String)
-  } deriving (Eq, Ord, Show)
-  
-makeClassy ''TrackLog
+htmlVideo ::
+  AircraftFlight
+  -> Video
+  -> Html ()
+htmlVideo _ (Video u t s n) =
+  let n' = fromMaybe ("Video (" ++ strVideoType t ++ ")") n
+  in  do  div_ . a_ [href_ (fromString (linkVideoType t u))] $
+            span_ [] (do  fromString n'
+                          maybe mempty (\q -> span_ [] (fromString (" from " ++ q))) s)
+          p_ $ iframe_ [width_ "560", height_ "315", termWith "allowfullscreen" [] "allowfullscreen", src_ (fromString (iframeVideoType t u))] ""
 
-data VideoType =
-  YouTube
-  | Vimeo
-  | Bambuser
-  deriving (Eq, Ord, Show)
-  
-makeClassyPrisms ''VideoType
-
-data Video =
-  Video {
-    _videouri :: String
-  , _videoname :: Maybe String
-  , _videotype :: VideoType
-  } deriving (Eq, Ord, Show)
-
-makeClassy ''Video
-
-data Expense =
-  Expense {
-    _expensecents :: Int
-  , _expensetime :: Maybe TimeAmount
-  , _expensedate :: Day
-  , _expensename :: String
-  } deriving (Eq, Ord, Show)
-
-makeClassy ''Expense
-
-data AircraftFlightMeta =
-  AircraftFlightMeta {
-    _tracklogs :: [TrackLog]
-  , _visualisations :: [Visualisation]
-  , _images :: [Image]
-  , _videos :: [Video]
-  , _expenses :: [AircraftFlightExpense]
-  } deriving (Eq, Ord, Show)
-
-makeClassy '' AircraftFlightMeta
-
--}
+htmlAircraftFlightMeta ::
+  AircraftFlight
+  -> AircraftFlightMeta
+  -> Html ()
+htmlAircraftFlightMeta fl (AircraftFlightMeta tls vls ims vds exs) =
+  let section :: [t] -> (AircraftFlight -> t -> Html ()) -> String -> Html ()
+      section x h n = 
+        let l = length x
+        in  case l of
+              0 ->
+                mempty
+              _ ->
+                do  span_ [] $
+                      (fromString (n ++ if l == 1 then "" else "s"))
+                    ul_ .
+                      mapM_ (h fl) $ x
+  in  div_ $ 
+        do  section tls htmlTrackLog "Track Log"
+            section vls htmlVisualisation "Visualisation"
+            section ims htmlImage "Image"
+            section vds htmlVideo "Video"
+            section exs htmlAircraftFlightExpense "Expense"
 
