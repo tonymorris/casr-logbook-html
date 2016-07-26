@@ -1,5 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Data.Aviation.Casr.Logbook.Html.Html where
 
@@ -151,6 +154,14 @@ data Video =
 
 makeClassy ''Video
 
+newtype TrackLogs =
+  TrackLogs
+    [TrackLog]
+  deriving (Eq, Ord, Show)
+
+makeClassy ''TrackLogs
+makeWrapped ''TrackLogs
+
 data AircraftFlightMeta =
   AircraftFlightMeta {
     _tracklogs :: [TrackLog]
@@ -161,6 +172,30 @@ data AircraftFlightMeta =
   } deriving (Eq, Ord, Show)
 
 makeClassy '' AircraftFlightMeta
+
+newtype SimulatorFlightMeta =
+  SimulatorFlightMeta
+    [SimulatorFlightExpense]
+  deriving (Eq, Ord, Show)
+
+makeClassy ''SimulatorFlightMeta
+makeWrapped ''SimulatorFlightMeta
+
+newtype ExamMeta =
+  ExamMeta
+    [ExamExpense]
+  deriving (Eq, Ord, Show)
+
+makeClassy ''ExamMeta
+makeWrapped ''ExamMeta
+
+newtype BriefingMeta =
+  BriefingMeta
+    [BriefingExpense]
+  deriving (Eq, Ord, Show)
+
+makeClassy ''BriefingMeta
+makeWrapped ''BriefingMeta
 
 ----
 
@@ -312,9 +347,10 @@ preflightBriefing =
   Briefing "Pre-flight Inspection" flightone (dayonly (fromGregorian 2015 12 10)) michaelward (parttimeamount x5)
 
 preflightBriefingMeta ::
-  [BriefingExpense]
+  BriefingMeta
 preflightBriefingMeta =
-  [BriefingExpense 7700 "Briefing - pre flight inspection"] 
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - pre flight inspection"] 
 
 effectofcontrols ::
   AircraftFlight
@@ -345,9 +381,10 @@ effectofcontrolsBriefing =
   Briefing "Effect of controls" flightone (dayonly (fromGregorian 2015 12 14)) michaelward (parttimeamount x8)
 
 effectofcontrolsBriefingMeta ::
-  [BriefingExpense]
+  BriefingMeta
 effectofcontrolsBriefingMeta =
-  [BriefingExpense 7700 "Briefing - Operation and effects"] 
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Operation and effects"] 
 
 straightandlevelBriefing :: 
   Briefing
@@ -355,9 +392,10 @@ straightandlevelBriefing =
   Briefing "Straight and Level" flightone (dayonly (fromGregorian 2015 12 18)) michaelward (TimeAmount 1 x0)
 
 straightandlevelBriefingMeta ::
-  [BriefingExpense]
+  BriefingMeta
 straightandlevelBriefingMeta =
-  [BriefingExpense 7700 "Briefing - Basic"] 
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Basic"] 
 
 straightandlevel ::
   AircraftFlight
@@ -410,9 +448,10 @@ climbinganddescendingBriefing =
   Briefing "Climbing and Descending" flightone (dayonly (fromGregorian 2015 12 20)) ryanlow (TimeAmount 1 x0)
 
 climbinganddescendingBriefingMeta ::
-  [BriefingExpense]
+  BriefingMeta
 climbinganddescendingBriefingMeta =
-  [BriefingExpense 7700 "Briefing - Basic"] 
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Basic"] 
 
 climbinganddescending ::
   AircraftFlight
@@ -505,9 +544,10 @@ stallingBriefing1 =
   Briefing "Stalling" flightone (dayonly (fromGregorian 2016 1 4)) michaelward (TimeAmount 1 x0)
 
 stallingBriefing1Meta ::
-  [BriefingExpense]
+  BriefingMeta
 stallingBriefing1Meta =
-  [BriefingExpense 7700 "Briefing - stalling"] 
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - stalling"] 
 
 stalling1 ::
   AircraftFlight
@@ -554,9 +594,10 @@ stallingBriefing2 =
   Briefing "Stalling" flightone (dayonly (fromGregorian 2016 1 8)) davidschofield (TimeAmount 1 x3)
 
 stallingBriefing2Meta ::
-  [BriefingExpense]
+  BriefingMeta
 stallingBriefing2Meta =
-  [BriefingExpense 7700 "Briefing - basic"] 
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - basic"] 
 
 stalling2 ::
   AircraftFlight
@@ -879,9 +920,10 @@ circuitemergenciesBriefing1 =
   Briefing "Circuit Emergencies" flightone (dayonly (fromGregorian 2016 2 12)) davidschofield (parttimeamount x5)
 
 circuitemergenciesBriefing1Meta ::
-  [BriefingExpense]
+  BriefingMeta
 circuitemergenciesBriefing1Meta =
-  [BriefingExpense 7700 "Briefing - Basic"] 
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Basic"] 
 
 circuitemergencies1 ::
   AircraftFlight
@@ -1015,9 +1057,10 @@ circuitemergenciesBriefing2 =
   Briefing "Circuit Emergencies" flightone (dayonly (fromGregorian 2016 2 18)) davidschofield (TimeAmount 1 x0)
 
 circuitemergenciesBriefing2Meta ::
-  [BriefingExpense]
+  BriefingMeta
 circuitemergenciesBriefing2Meta =
-  [BriefingExpense 7700 "Briefing - Basic cct emer"] 
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Basic cct emer"] 
 
 firstsoloexam ::
   Exam
@@ -1031,9 +1074,10 @@ firstsoloexam =
     40
 
 firstsoloexamMeta ::
-  [ExamExpense]
+  ExamMeta
 firstsoloexamMeta =
-  [ExamExpense 13200 "EXAM - In House Solo exam Pass 77%"]
+  ExamMeta
+    [ExamExpense 13200 "EXAM - In House Solo exam Pass 77%"]
 
 circuitemergencies2 ::
   AircraftFlight
@@ -1086,9 +1130,10 @@ circuitemergenciesBriefing3 =
   Briefing "Circuit Emergencies" flightone (dayonly (fromGregorian 2016 2 25)) davidschofield (parttimeamount x5)
 
 circuitemergenciesBriefing3Meta ::
-  [BriefingExpense]
+  BriefingMeta
 circuitemergenciesBriefing3Meta =
-  [BriefingExpense 7700 "Briefing - CCT emergencies (DS)"] 
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - CCT emergencies (DS)"] 
 
 areasoloexam ::
   Exam
@@ -1102,9 +1147,10 @@ areasoloexam =
     40
 
 areasoloexamMeta ::
-  [ExamExpense]
+  ExamMeta
 areasoloexamMeta =
-  [ExamExpense 13200 "EXAM - In House area solo Pass!"]
+  ExamMeta
+    [ExamExpense 13200 "EXAM - In House area solo Pass!"]
 
 circuitemergencies3 ::
   AircraftFlight
@@ -1157,9 +1203,10 @@ circuitemergenciesBriefing4 =
   Briefing "Circuit Emergencies" flightone (dayonly (fromGregorian 2016 3 4)) davidschofield (parttimeamount x7)
 
 circuitemergenciesBriefing4Meta ::
-  [BriefingExpense]
+  BriefingMeta
 circuitemergenciesBriefing4Meta =
-  [BriefingExpense 7700 "Briefing - circuits"] 
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - circuits"] 
 
 circuits5 ::
   AircraftFlight
@@ -1205,9 +1252,10 @@ circuitemergenciesBriefing5 =
   Briefing "Circuits" flightone (dayonly (fromGregorian 2016 3 9)) davidschofield (parttimeamount x5)
 
 circuitemergenciesBriefing5Meta ::
-  [BriefingExpense]
+  BriefingMeta
 circuitemergenciesBriefing5Meta =
-  [BriefingExpense 7700 "Briefing - Basic"]
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Basic"]
 
 firstsolo ::
   AircraftFlight
@@ -1253,9 +1301,10 @@ circuitemergenciesBriefing6 =
   Briefing "Circuits" flightone (dayonly (fromGregorian 2016 3 24)) davidschofield (parttimeamount x4)
 
 circuitemergenciesBriefing6Meta ::
-  [BriefingExpense]
+  BriefingMeta
 circuitemergenciesBriefing6Meta =
-  [BriefingExpense 7700 "Briefing - Basic"]
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Basic"]
 
 circuitscrosswind1 ::
   AircraftFlight
@@ -1302,9 +1351,10 @@ circuitscrosswindBriefing =
   Briefing "Circuits Crosswind" flightone (dayonly (fromGregorian 2016 4 15)) davidschofield (parttimeamount x5)
 
 circuitscrosswindBriefingMeta :: 
-  [BriefingExpense]
+  BriefingMeta
 circuitscrosswindBriefingMeta =
-  [BriefingExpense 7700 "Briefing - X-Wind CCTs"]
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - X-Wind CCTs"]
 
 circuitssolocheck1 ::
   AircraftFlight
@@ -1476,9 +1526,10 @@ practiceforcedlandingsBriefing =
   Briefing "Practice Forced Landings" flightone (dayonly (fromGregorian 2016 5 9)) davidschofield (TimeAmount 1 x5)
 
 practiceforcedlandingsBriefingMeta ::
-  [BriefingExpense]
+  BriefingMeta
 practiceforcedlandingsBriefingMeta =
-  [BriefingExpense 7700 "Briefing - Basic"]
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Basic"]
 
 practiceforcedlandings1 ::
   AircraftFlight
@@ -1586,9 +1637,10 @@ steepturnsBriefing =
   Briefing "Steep Turns" flightone (dayonly (fromGregorian 2016 5 9)) davidschofield (TimeAmount 1 x5)
 
 steepturnsBriefingMeta ::
-  [BriefingExpense]
+  BriefingMeta
 steepturnsBriefingMeta =
-  [BriefingExpense 7700 "Briefing"]
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing"]
 
 steepturns ::
   AircraftFlight
@@ -1808,9 +1860,10 @@ areasoloBriefing1 =
   Briefing "Area Solo Preparation" flightone (dayonly (fromGregorian 2016 6 16)) davidschofield (parttimeamount x5)
 
 areasoloBriefing1Meta ::
-  [BriefingExpense]
+  BriefingMeta
 areasoloBriefing1Meta =
-  [BriefingExpense 7700 "Briefing - Area solo prep"]    
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Area solo prep"]    
 
 areasolo1 ::
   AircraftFlight
@@ -1872,9 +1925,10 @@ areasoloBriefing2 =
   Briefing "Area Solo Post Brief" flightone (dayonly (fromGregorian 2016 6 17)) davidschofield (parttimeamount x4)
 
 areasoloBriefing2Meta ::
-  [BriefingExpense]
+  BriefingMeta
 areasoloBriefing2Meta =
-  [BriefingExpense 7700 "Briefing - area solo pre & post brief"]
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - area solo pre & post brief"]
 
 areasolo2 ::
   AircraftFlight
@@ -1932,9 +1986,10 @@ frolexam =
     40
 
 frolexamMeta ::
-  [ExamExpense]
+  ExamMeta
 frolexamMeta =
-  [ExamExpense 17600 "Flight Radio Operators Licence", ExamExpense (-17600) "Flight Radio Operators Licence"]
+  ExamMeta
+    [ExamExpense 17600 "Flight Radio Operators Licence", ExamExpense (-17600) "Flight Radio Operators Licence"]
 
 areasoloBriefing3 :: 
   Briefing
@@ -1942,9 +1997,10 @@ areasoloBriefing3 =
   Briefing "Area Solo Post Brief" flightone (dayonly (fromGregorian 2016 6 26)) davidschofield (parttimeamount x4)
 
 areasoloBriefing3Meta ::
-  [BriefingExpense]
+  BriefingMeta
 areasoloBriefing3Meta =
-  [BriefingExpense 7700 "Briefing - Area Solo"]
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Area Solo"]
 
 basicinstrumentflightsim ::
   SimulatorFlight
@@ -1957,9 +2013,10 @@ basicinstrumentflightsim =
     (parttimeamount x5)
 
 basicinstrumentflightsimMeta ::
-  [SimulatorFlightExpense]
+  SimulatorFlightMeta
 basicinstrumentflightsimMeta =
-  [SimulatorFlightExpense 26400 "Synthetic Trainer Under Instruction"]
+  SimulatorFlightMeta
+    [SimulatorFlightExpense 26400 "Synthetic Trainer Under Instruction"]
 
 basicinstrumentflightBriefing1 ::
   Briefing
@@ -1967,9 +2024,10 @@ basicinstrumentflightBriefing1 =
   Briefing "Basic Instrument Flight" flightone (dayonly (fromGregorian 2016 7 5)) damienboyer (TimeAmount 1 x0)
 
 basicinstrumentflightBriefing1Meta ::
-  [BriefingExpense]
+  BriefingMeta
 basicinstrumentflightBriefing1Meta =
-  [BriefingExpense 7700 "Briefing - Basic"]
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Basic"]
 
 basicinstrumentflight ::
   AircraftFlight
@@ -2017,12 +2075,13 @@ basicinstrumentflightBriefing2 =
   Briefing "Basic Instrument Flight Post Brief" flightone (dayonly (fromGregorian 2016 7 14)) davidschofield (parttimeamount x3)
 
 basicinstrumentflightBriefing2Meta ::
-  [BriefingExpense]
+  BriefingMeta
 basicinstrumentflightBriefing2Meta =
-  [BriefingExpense 7700 "Briefing - Basic"]
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Basic"]
 
 loog ::
-  Logbook AircraftFlightMeta [SimulatorFlightExpense] [ExamExpense] [BriefingExpense]
+  Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
 loog =
   aviatorlogbook
     tonymorris
@@ -2533,24 +2592,46 @@ htmlBriefing (Briefing n l t a m) =
         htmlTimeAmountZero m
 
 htmlEntry ::
-  Entry AircraftFlightMeta [SimulatorFlightExpense] [ExamExpense] [BriefingExpense]
+  Entry AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
   -> Html ()
 htmlEntry (AircraftFlightEntry e ae) =
   do  htmlAircraftFlight e
       htmlAircraftFlightMeta e ae
 htmlEntry (SimulatorFlightEntry e se) =
   do  htmlSimulatorFlight e
-      mapM_
-        (htmlSimulatorFlightExpense e) se
+      htmlSimulatorFlightMeta e se
 htmlEntry (ExamEntry e ee) =
   do  htmlExam e
-      mapM_ (htmlExamExpense e) ee
+      htmlExamMeta e ee
+      -- mapM_ (htmlExamExpense e) ee
 htmlEntry (BriefingEntry e be) =
   do  htmlBriefing e
-      mapM_ (htmlBriefingExpense e) be
+      htmlBriefingMeta e be
+      -- mapM_ (htmlBriefingExpense e) be
+
+htmlSimulatorFlightMeta ::
+  SimulatorFlight
+  -> SimulatorFlightMeta
+  -> Html ()
+htmlSimulatorFlightMeta fl (SimulatorFlightMeta s) =
+  mapM_ (htmlSimulatorFlightExpense fl) s
+
+htmlExamMeta ::
+  Exam
+  -> ExamMeta
+  -> Html ()
+htmlExamMeta e (ExamMeta s) =
+  mapM_ (htmlExamExpense e) s
+
+htmlBriefingMeta ::
+  Briefing
+  -> BriefingMeta
+  -> Html ()
+htmlBriefingMeta b (BriefingMeta s) =
+  mapM_ (htmlBriefingExpense b) s
 
 htmlLogbook ::
-  Logbook AircraftFlightMeta [SimulatorFlightExpense] [ExamExpense] [BriefingExpense]
+  Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
   -> Html ()
 htmlLogbook (Logbook a (Entries es)) =
   do  htmlAviator a
@@ -2635,3 +2716,5 @@ writetest3 :: IO ()
 writetest3 =
   renderToFile "/tmp/z.html" test3
           
+-- todo
+-- * [Rating] -> Ratings
