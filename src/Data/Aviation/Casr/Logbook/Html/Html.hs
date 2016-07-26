@@ -8,13 +8,14 @@ import Prelude
 
 import Data.Aviation.Casr.Logbook
 import Control.Lens
+import Data.Char
 import Data.Digit
+import Data.List
 import Data.Time
 import Data.String
 import Control.Monad
 import Data.Maybe
-import Data.Monoid
-import Data.Text(Text)
+import Data.Monoid hiding (Dual)
 import qualified Data.Text as Text
 
 data AircraftUsageExpense =
@@ -2142,62 +2143,6 @@ timeAmountBy10 (TimeAmount a b) =
 
 ----
 
-writetest1 :: IO ()
-writetest1 =
-  renderToFile "/tmp/x.html" test1
-
-test1 :: Html ()
-test1 =
-  doctypehtml_ (do head_ (title_ "title"); body_ test1')
-
-test1' :: Html ()
-test1' =
-  do  htmlAircraftUsageExpense turning (AircraftUsageExpense 34107 "expense")
-      hr_ []
-      htmlVisualisation turning (Doarama "595690" "6rAdypE" Nothing)
-      hr_ []
-      htmlImage turning (Image "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082411.jpg" Jpg Nothing Nothing)
-      hr_ []
-      htmlTrackLog turning (TrackLog "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/20151218-vh-ldo.gpx" Gpx (Just "Garmin 62s") (Just "test tracklog"))
-      hr_ []
-      htmlTrackLog turning (TrackLog "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20151218-vh-ldo.png" (ImageTrackLog Png) (Just "gpsvisualizer.com") (Just "test image tracklog"))
-      hr_ []
-      htmlVideo turning (Video "13BVior4VmY" YouTube (Just "a source") (Just " a name"))
-
-test2' :: Html ()
-test2' =
-  htmlAircraftFlightMeta
-    turning $
-      AircraftFlightMeta
-        [
-          TrackLog "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20151218-vh-ldo.png" (ImageTrackLog Png) (Just "gpsvisualizer.com") (Just "test image tracklog")
-        ]
-
-        [
-          Doarama "595690" "6rAdypE" Nothing
-        ]
-
-        [
-          Image "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082411.jpg" Jpg Nothing Nothing
-        ]
-
-        [
-          Video "13BVior4VmY" YouTube (Just "a source") (Just " a name")
-        ]
-
-        [
-          ExpenseAircraftUsage (AircraftUsageExpense 34107 "usage expense")
-        , ExpenseAircraftLanding (AircraftLandingExpense 43177 "landing expense")
-        ]
-
-test2 :: Html ()
-test2 =
-  doctypehtml_ (do head_ (title_ "title for test2"); body_ test2')
-
-writetest2 :: IO ()
-writetest2 =
-  renderToFile "/tmp/y.html" test2
-
 htmlAircraftUsageExpense ::
   AircraftFlight
   -> AircraftUsageExpense
@@ -2394,3 +2339,299 @@ htmlAircraftFlightMeta fl (AircraftFlightMeta tls vls ims vds exs) =
             section vds htmlVideo "Video"
             section exs htmlAircraftFlightExpense "Expense"
 
+strEngine ::
+  Engine
+  -> String
+strEngine Single =
+  "single-engine"
+strEngine Multi =
+  "multi-engine"
+
+htmlAircraft ::
+  AircraftFlight
+  -> Aircraft
+  -> Html ()
+htmlAircraft _ (Aircraft t r e) =
+  span_ [] $
+    do  span_ [] (fromString t)
+        " "
+        span_ [] (fromString r)
+        " "
+        span_ [] (fromString (strEngine e))
+
+htmlRating ::
+  Rating
+  -> Html ()
+htmlRating (Rating n d) =
+  span_ [] $
+    do  span_ [] (fromString n)
+        maybe mempty (\q -> 
+          do  " "
+              fromString (show q)) d
+
+htmlAviator ::
+  Aviator
+  -> Html ()
+htmlAviator (Aviator s f a d r) =
+  div_ [] .
+    ul_ [] $
+      do  do  li_ [] "Name: "
+              span_ [] $
+                do  fromString (map toUpper s)
+                    ", "
+                    fromString f
+          when (not . null $ a) $
+            do  li_ [] "ARN: "
+                span_ [] $
+                  fromString (a >>= show)
+          maybe mempty (\q ->
+            do  li_ [] "DOB: "
+                span_ [] .
+                  fromString . show $ q) d
+          when (not . null $ r) $
+            do  li_ [] "Ratings: "
+                span_ [] .
+                  fromString $ intercalate ", " ((^. ratingName) <$> r)
+
+htmlFlightPoint ::
+  AircraftFlight
+  -> FlightPoint
+  -> Html ()
+htmlFlightPoint _ (FlightPoint p _ _) =
+  span_ [] $
+    fromString p
+
+htmlFlightPath ::
+  AircraftFlight
+  -> FlightPath
+  -> Html ()
+htmlFlightPath fl (FlightPath a x b) =
+  span_ [] $
+    do  htmlFlightPoint fl a
+        mapM_ (\p -> htmlFlightPoint fl p) x
+        htmlFlightPoint fl b
+
+htmlCommand ::
+  AircraftFlight
+  -> Command
+  -> Html ()
+htmlCommand _ InCommand =
+  span_ [] "In-Command"
+htmlCommand _ (ICUS a) =
+  span_ [] $ 
+    do  "In-Command Under-Instruction"
+        htmlAviator a
+htmlCommand _ (Dual a) =
+  span_ [] $
+    do  "Dual Under-Instruction"
+        htmlAviator a
+
+strTimeAmount ::
+  TimeAmount
+  -> String
+strTimeAmount (TimeAmount h x) =
+  show h ++ "." ++ show x
+
+htmlTimeAmount ::
+  TimeAmount
+  -> Html ()
+htmlTimeAmount t =
+  span_ [] $
+    do  fromString (strTimeAmount t)
+        "hrs"
+
+htmlTimeAmountZero ::
+  TimeAmount
+  -> Html ()
+htmlTimeAmountZero z =
+  if z == zerotimeamount
+    then
+      mempty
+    else
+      span_ [] $
+        htmlTimeAmount z
+
+htmlAircraftFlight ::
+  AircraftFlight
+  -> Html ()
+htmlAircraftFlight fl@(AircraftFlight n a c (DayNight d m) p o i) =
+  span_ [] $
+    do  span_ [] $
+          fromString n
+        span_ [] $
+          htmlAircraft fl a
+        span_ [] $
+          htmlCommand fl c
+        htmlTimeAmountZero d
+        htmlTimeAmountZero m
+        span_ [] $
+          htmlFlightPath fl p
+        span_ [] $
+          mapM_ htmlAviator o
+        htmlTimeAmountZero i
+
+htmlTime ::
+  Time
+  -> Html ()
+htmlTime (Time t d) =
+  do  fromString (show t)
+      maybe mempty (\e -> do  " "
+                              fromString (show e)) d
+
+htmlSimulatorFlight ::
+  SimulatorFlight
+  -> Html ()
+htmlSimulatorFlight (SimulatorFlight n t y o i) =
+  span_ [] $
+    do  span_ [] (fromString n)
+        htmlTime t
+        span_ [] (fromString y)
+        span_ [] $
+          mapM_ htmlAviator o
+        htmlTimeAmountZero i
+
+htmlLocation ::
+  Location
+  -> Html ()
+htmlLocation (Location n t o) =
+  span_ [] $
+    do  fromString n
+        fromString (show t)
+        fromString (show o)
+
+htmlExamResult ::
+  Int
+  -> Int
+  -> Html ()
+htmlExamResult x y =
+  do  fromString (show x)
+      "/"
+      fromString (show y)
+
+htmlExam ::
+  Exam
+  -> Html ()
+htmlExam (Exam n l t a r m) =
+  span_ [] $
+    do  span_ [] $ 
+          fromString n
+        htmlLocation l
+        htmlTime t
+        htmlAviator a
+        htmlExamResult r m
+
+htmlBriefing ::
+  Briefing
+  -> Html ()
+htmlBriefing (Briefing n l t a m) =
+  span_ [] $
+    do  span_ [] $ 
+          fromString n
+        htmlLocation l
+        htmlTime t
+        htmlAviator a
+        htmlTimeAmountZero m
+
+htmlEntry ::
+  Entry AircraftFlightMeta [SimulatorFlightExpense] [ExamExpense] [BriefingExpense]
+  -> Html ()
+htmlEntry (AircraftFlightEntry e ae) =
+  do  htmlAircraftFlight e
+      htmlAircraftFlightMeta e ae
+htmlEntry (SimulatorFlightEntry e se) =
+  do  htmlSimulatorFlight e
+      mapM_
+        (htmlSimulatorFlightExpense e) se
+htmlEntry (ExamEntry e ee) =
+  do  htmlExam e
+      mapM_ (htmlExamExpense e) ee
+htmlEntry (BriefingEntry e be) =
+  do  htmlBriefing e
+      mapM_ (htmlBriefingExpense e) be
+
+htmlLogbook ::
+  Logbook AircraftFlightMeta [SimulatorFlightExpense] [ExamExpense] [BriefingExpense]
+  -> Html ()
+htmlLogbook (Logbook a (Entries es)) =
+  do  htmlAviator a
+      mapM_ htmlEntry es
+
+----
+
+
+writetest1 :: IO ()
+writetest1 =
+  renderToFile "/tmp/x.html" test1
+
+test1 :: Html ()
+test1 =
+  doctypehtml_ (do head_ (title_ "title"); body_ test1')
+
+test1' :: Html ()
+test1' =
+  do  htmlAircraftUsageExpense turning (AircraftUsageExpense 34107 "expense")
+      hr_ []
+      htmlVisualisation turning (Doarama "595690" "6rAdypE" Nothing)
+      hr_ []
+      htmlImage turning (Image "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082411.jpg" Jpg Nothing Nothing)
+      hr_ []
+      htmlTrackLog turning (TrackLog "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/20151218-vh-ldo.gpx" Gpx (Just "Garmin 62s") (Just "test tracklog"))
+      hr_ []
+      htmlTrackLog turning (TrackLog "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20151218-vh-ldo.png" (ImageTrackLog Png) (Just "gpsvisualizer.com") (Just "test image tracklog"))
+      hr_ []
+      htmlVideo turning (Video "13BVior4VmY" YouTube (Just "a source") (Just " a name"))
+      hr_ []
+      htmlAircraft turning vhvvo
+      hr_ []
+      htmlAviator tonymorris
+
+test2' :: Html ()
+test2' =
+  htmlAircraftFlightMeta
+    turning $
+      AircraftFlightMeta
+        [
+          TrackLog "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20151218-vh-ldo.png" (ImageTrackLog Png) (Just "gpsvisualizer.com") (Just "test image tracklog")
+        ]
+
+        [
+          Doarama "595690" "6rAdypE" Nothing
+        ]
+
+        [
+          Image "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082411.jpg" Jpg Nothing Nothing
+        ]
+
+        [
+          Video "13BVior4VmY" YouTube (Just "a source") (Just " a name")
+        ]
+
+        [
+          ExpenseAircraftUsage (AircraftUsageExpense 34107 "usage expense")
+        , ExpenseAircraftLanding (AircraftLandingExpense 43177 "landing expense")
+        ]
+
+test2 :: Html ()
+test2 =
+  doctypehtml_ $
+    do  head_ (title_ "title for test2")
+        body_ $ 
+          do  htmlAircraftFlight turning
+              test2'
+
+writetest2 :: IO ()
+writetest2 =
+  renderToFile "/tmp/y.html" test2
+
+test3 :: Html ()
+test3 =
+  doctypehtml_ $
+    do  head_ $ 
+          title_ "logbook"
+        body_ $ 
+          htmlLogbook loog
+
+writetest3 :: IO ()
+writetest3 =
+  renderToFile "/tmp/z.html" test3
+          
