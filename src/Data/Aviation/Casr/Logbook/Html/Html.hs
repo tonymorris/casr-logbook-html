@@ -2313,16 +2313,23 @@ strImageType Png =
 strImageType Gif =
   "gif"
 
+htmlImageSource ::
+  AircraftFlight
+  -> Maybe String
+  -> Html ()
+htmlImageSource _ =
+  maybe mempty (\s' -> span_ [] (fromString ("Image source: " ++ s')))
+
 htmlImage ::
   AircraftFlight
   -> Image
   -> Html ()
-htmlImage _ (Image u t s n) =
+htmlImage fl (Image u t s n) =
   let u' = fromString u      
       n' = fromMaybe ("Image (" ++ strImageType t ++ ")") n
   in  do  a_ [href_ u'] $
             img_ [src_ u', width_ "120", alt_ (Text.pack n')]
-          maybe mempty (\s' -> span_ [] (fromString ("Image source: " ++ s'))) s
+          htmlImageSource fl s
 
 strTrackLogType ::
   TrackLogType
@@ -2336,15 +2343,22 @@ strTrackLogType Kmz =
 strTrackLogType (ImageTrackLog i) =
   strImageType i
 
+htmlTrackLogSource ::
+  AircraftFlight
+  -> Maybe String
+  -> Html ()
+htmlTrackLogSource _ =
+  maybe "" (\q -> span_ [] (fromString (" from " ++ q)))
+
 htmlTrackLog ::
   AircraftFlight
   -> TrackLog
   -> Html ()
-htmlTrackLog _ (TrackLog u t s n) =
+htmlTrackLog fl (TrackLog u t s n) =
   let u' = fromString u
       n' = fromMaybe (strTrackLogType t) n
       o = do  fromString n'
-              maybe "" (\q -> span_ [] (fromString (" from " ++ q))) s
+              htmlTrackLogSource fl s
   in  do  a_ [href_ u'] o
           case t of 
             ImageTrackLog _ ->
@@ -2364,15 +2378,23 @@ strVideoType Vimeo =
 strVideoType Bambuser =
   "bambuser"
 
+htmlVideoSource ::
+  AircraftFlight
+  -> Maybe String
+  -> Html ()
+htmlVideoSource _ s =
+  maybe mempty (\q -> span_ [] (fromString (" from " ++ q))) s
+
 htmlVideo ::
   AircraftFlight
   -> Video
   -> Html ()
-htmlVideo _ (Video u t s n) =
+htmlVideo fl (Video u t s n) =
   let n' = fromMaybe ("Video (" ++ strVideoType t ++ ")") n
   in  do  div_ . a_ [href_ (fromString (linkVideoType t u))] $
-            span_ [] (do  fromString n'
-                          maybe mempty (\q -> span_ [] (fromString (" from " ++ q))) s)
+            span_ [] $
+              do  fromString n'
+                  htmlVideoSource fl s
           p_ $ iframe_ [width_ "560", height_ "315", termWith "allowfullscreen" [] "allowfullscreen", src_ (fromString (iframeVideoType t u))] ""
 
 htmlTrackLogs ::
@@ -2457,15 +2479,65 @@ htmlAircraft _ (Aircraft t r e) =
         " "
         span_ [] (fromString (strEngine e))
 
+htmlRatingDay ::
+  Maybe Day
+  -> Html ()
+htmlRatingDay =
+  maybe mempty (\q -> 
+    do  " "
+        fromString (show q))
+
 htmlRating ::
   Rating
   -> Html ()
 htmlRating (Rating n d) =
   span_ [] $
     do  span_ [] (fromString n)
-        maybe mempty (\q -> 
-          do  " "
-              fromString (show q)) d
+        htmlRatingDay d
+
+htmlRatings ::
+  [Rating]
+  -> Html ()
+htmlRatings =
+  sequence_ . intersperse ", " . map htmlRating
+
+htmlAviatorName ::
+  String
+  -> String
+  -> Html ()
+htmlAviatorName s f =
+  do  li_ [] "Name: "
+      span_ [] $
+        do  fromString (map toUpper s)
+            ", "
+            fromString f
+
+htmlAviatorARN ::
+  [Digit]
+  -> Html ()
+htmlAviatorARN a =
+  when (not . null $ a) $
+    do  li_ [] "ARN: "
+        span_ [] $
+          fromString (a >>= show)
+
+htmlAviatorDob ::
+  Maybe Day
+  -> Html ()
+htmlAviatorDob =
+  maybe mempty (\q ->
+    do  li_ [] "DOB: "
+        span_ [] .
+          fromString . show $ q)
+
+htmlAviatorRatings ::
+  [Rating]
+  -> Html ()
+htmlAviatorRatings r =
+  when (not . null $ r) $
+    do  li_ [] "Ratings: "
+        span_ [] .
+          htmlRatings $ r
 
 htmlAviator ::
   Aviator
@@ -2473,24 +2545,11 @@ htmlAviator ::
 htmlAviator (Aviator s f a d r) =
   div_ [] .
     ul_ [] $
-      do  do  li_ [] "Name: "
-              span_ [] $
-                do  fromString (map toUpper s)
-                    ", "
-                    fromString f
-          when (not . null $ a) $
-            do  li_ [] "ARN: "
-                span_ [] $
-                  fromString (a >>= show)
-          maybe mempty (\q ->
-            do  li_ [] "DOB: "
-                span_ [] .
-                  fromString . show $ q) d
-          when (not . null $ r) $
-            do  li_ [] "Ratings: "
-                span_ [] .
-                  fromString $ intercalate ", " ((^. ratingName) <$> r)
-
+      do  htmlAviatorName s f
+          htmlAviatorARN a
+          htmlAviatorDob d
+          htmlAviatorRatings r
+                
 htmlFlightPoint ::
   AircraftFlight
   -> FlightPoint
@@ -2574,13 +2633,19 @@ htmlAircraftFlight fl@(AircraftFlight n a c (DayNight d m) p o i) =
           htmlAviators o
         htmlTimeAmountZero i
 
+htmlTimeOfDayTime ::
+  Maybe TimeOfDay
+  -> Html ()
+htmlTimeOfDayTime =
+  maybe mempty (\e -> do  " "
+                          fromString (show e))
+
 htmlTime ::
   Time
   -> Html ()
 htmlTime (Time t d) =
   do  fromString (show t)
-      maybe mempty (\e -> do  " "
-                              fromString (show e)) d
+      htmlTimeOfDayTime d
 
 htmlSimulatorFlight ::
   SimulatorFlight
@@ -2764,14 +2829,3 @@ writetest3 :: IO ()
 writetest3 =
   renderToFile "/tmp/z.html" test3
           
--- todo
--- * [Rating] -> Ratings (Aviator)
--- * [Aviator] -> Aviators (AircraftFlight)
--- * [Digit] -> Digits (Aviator)
--- * Maybe Day -> DOB (Aviator)
--- * makeClassy ''Entries ??
--- * [FlightPoint] -> FlightPoints (FlightPath)
--- * Maybe String -> Runway (FlightPoint)
--- * Maybe Day -> RatingAchieved (Rating)
--- * [Aviator] -> Aviators (SimulatorFlight)
--- * Maybe TimeOfDay -> ClockTime (Time)
