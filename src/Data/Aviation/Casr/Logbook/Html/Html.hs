@@ -2670,11 +2670,17 @@ htmlLocation ::
   Location
   -> Html ()
 htmlLocation (Location n t o) =
-  span_ [] $
+  div_ [] $
     do  fromString n
-        fromString (show t)
-        fromString (show o)
-
+        " "
+        let t' = fromString (show t)
+            o' = fromString (show o)
+        span_ [] $
+          a_ [href_ ("http://www.openstreetmap.org/?mlat=" <> t' <> "&mlon=" <> o' <> "#map=16/" <> t' <> "/" <> o')] "openstreetmap"
+        " "
+        span_ [] $
+          a_ [href_ ("https://www.google.com/maps/?q=" <> t' <> "," <> o')] "google maps"
+        
 htmlExamResult ::
   Int
   -> Int
@@ -2696,17 +2702,29 @@ htmlExam (Exam n l t a r m) =
         htmlAviator a
         htmlExamResult r m
 
+htmlBriefingName ::
+  String
+  -> Html ()
+htmlBriefingName n =
+  span_ [] $ 
+    fromString n
+
 htmlBriefing ::
   Briefing
   -> Html ()
 htmlBriefing (Briefing n l t a m) =
   div_ [] $
-    do  span_ [] $ 
-          fromString n
-        htmlLocation l
+    do  span_ [] $ "Briefing"
+        " "
+        htmlBriefingName n
+        " on "
         htmlTime t
-        htmlAviator a
+        " at "
+        htmlLocation l
+        " for "
         htmlTimeAmountZero m
+        " by "
+        htmlAviator a
 
 htmlEntry ::
   Entry AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
