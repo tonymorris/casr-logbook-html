@@ -2375,28 +2375,67 @@ htmlVideo _ (Video u t s n) =
                           maybe mempty (\q -> span_ [] (fromString (" from " ++ q))) s)
           p_ $ iframe_ [width_ "560", height_ "315", termWith "allowfullscreen" [] "allowfullscreen", src_ (fromString (iframeVideoType t u))] ""
 
+htmlTrackLogs ::
+  AircraftFlight
+  -> [TrackLog]
+  -> Html ()
+htmlTrackLogs fl x =
+  do span_ [] $
+       "Track Log"
+     ul_ .
+       mapM_ (htmlTrackLog fl) $ x
+
+htmlVisualisations ::
+  AircraftFlight
+  -> [Visualisation]
+  -> Html ()
+htmlVisualisations fl x =
+  do span_ [] $
+       "Visualisation"
+     ul_ .
+       mapM_ (htmlVisualisation fl) $ x
+
+htmlImages ::
+  AircraftFlight
+  -> [Image]
+  -> Html ()
+htmlImages fl x =
+  do span_ [] $
+       "Image"
+     ul_ .
+       mapM_ (htmlImage fl) $ x
+
+htmlVideos ::
+  AircraftFlight
+  -> [Video]
+  -> Html ()
+htmlVideos fl x =
+  do span_ [] $
+       "Video"
+     ul_ .
+       mapM_ (htmlVideo fl) $ x
+
+htmlAircraftFlightExpenses ::
+  AircraftFlight
+  -> [AircraftFlightExpense]
+  -> Html ()
+htmlAircraftFlightExpenses fl x =
+  do span_ [] $
+       "Aircraft Flight Expense"
+     ul_ .
+       mapM_ (htmlAircraftFlightExpense fl) $ x
+
 htmlAircraftFlightMeta ::
   AircraftFlight
   -> AircraftFlightMeta
   -> Html ()
 htmlAircraftFlightMeta fl (AircraftFlightMeta tls vls ims vds exs) =
-  let section :: [t] -> (AircraftFlight -> t -> Html ()) -> String -> Html ()
-      section x h n = 
-        let l = length x
-        in  case l of
-              0 ->
-                mempty
-              _ ->
-                do  span_ [] $
-                      (fromString (n ++ if l == 1 then "" else "s"))
-                    ul_ .
-                      mapM_ (h fl) $ x
-  in  div_ $ 
-        do  section tls htmlTrackLog "Track Log"
-            section vls htmlVisualisation "Visualisation"
-            section ims htmlImage "Image"
-            section vds htmlVideo "Video"
-            section exs htmlAircraftFlightExpense "Expense"
+  div_ $ 
+    do  htmlTrackLogs fl tls
+        htmlVisualisations fl vls
+        htmlImages fl ims
+        htmlVideos fl vds
+        htmlAircraftFlightExpenses fl exs
 
 strEngine ::
   Engine
@@ -2467,7 +2506,7 @@ htmlFlightPath ::
 htmlFlightPath fl (FlightPath a x b) =
   span_ [] $
     do  htmlFlightPoint fl a
-        mapM_ (\p -> htmlFlightPoint fl p) x
+        mapM_ (htmlFlightPoint fl) x
         htmlFlightPoint fl b
 
 htmlCommand ::
@@ -2510,6 +2549,12 @@ htmlTimeAmountZero z =
       span_ [] $
         htmlTimeAmount z
 
+htmlAviators ::
+  [Aviator]
+  -> Html ()
+htmlAviators =
+  mapM_ htmlAviator
+
 htmlAircraftFlight ::
   AircraftFlight
   -> Html ()
@@ -2526,7 +2571,7 @@ htmlAircraftFlight fl@(AircraftFlight n a c (DayNight d m) p o i) =
         span_ [] $
           htmlFlightPath fl p
         span_ [] $
-          mapM_ htmlAviator o
+          htmlAviators o
         htmlTimeAmountZero i
 
 htmlTime ::
@@ -2546,7 +2591,7 @@ htmlSimulatorFlight (SimulatorFlight n t y o i) =
         htmlTime t
         span_ [] (fromString y)
         span_ [] $
-          mapM_ htmlAviator o
+          htmlAviators o
         htmlTimeAmountZero i
 
 htmlLocation ::
@@ -2603,11 +2648,9 @@ htmlEntry (SimulatorFlightEntry e se) =
 htmlEntry (ExamEntry e ee) =
   do  htmlExam e
       htmlExamMeta e ee
-      -- mapM_ (htmlExamExpense e) ee
 htmlEntry (BriefingEntry e be) =
   do  htmlBriefing e
       htmlBriefingMeta e be
-      -- mapM_ (htmlBriefingExpense e) be
 
 htmlSimulatorFlightMeta ::
   SimulatorFlight
@@ -2630,15 +2673,20 @@ htmlBriefingMeta ::
 htmlBriefingMeta b (BriefingMeta s) =
   mapM_ (htmlBriefingExpense b) s
 
+htmlEntries ::
+  Entries AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
+  -> Html ()
+htmlEntries (Entries es) =
+  mapM_ htmlEntry es
+
 htmlLogbook ::
   Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
   -> Html ()
-htmlLogbook (Logbook a (Entries es)) =
+htmlLogbook (Logbook a es) =
   do  htmlAviator a
-      mapM_ htmlEntry es
+      htmlEntries es
 
 ----
-
 
 writetest1 :: IO ()
 writetest1 =
@@ -2717,4 +2765,13 @@ writetest3 =
   renderToFile "/tmp/z.html" test3
           
 -- todo
--- * [Rating] -> Ratings
+-- * [Rating] -> Ratings (Aviator)
+-- * [Aviator] -> Aviators (AircraftFlight)
+-- * [Digit] -> Digits (Aviator)
+-- * Maybe Day -> DOB (Aviator)
+-- * makeClassy ''Entries ??
+-- * [FlightPoint] -> FlightPoints (FlightPath)
+-- * Maybe String -> Runway (FlightPoint)
+-- * Maybe Day -> RatingAchieved (Rating)
+-- * [Aviator] -> Aviators (SimulatorFlight)
+-- * Maybe TimeOfDay -> ClockTime (Time)
