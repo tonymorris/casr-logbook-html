@@ -2087,6 +2087,7 @@ loog =
     tonymorris
     [
       BriefingEntry preflightBriefing preflightBriefingMeta
+      {-
     , AircraftFlightEntry effectofcontrols effectofcontrolsMeta
     , BriefingEntry effectofcontrolsBriefing effectofcontrolsBriefingMeta
     , AircraftFlightEntry straightandlevel straightandlevelMeta
@@ -2140,6 +2141,7 @@ loog =
     , SimulatorFlightEntry basicinstrumentflightsim basicinstrumentflightsimMeta
     , AircraftFlightEntry basicinstrumentflight basicinstrumentflightMeta
     , BriefingEntry basicinstrumentflightBriefing2 basicinstrumentflightBriefing2Meta
+    -}
     ]
 
 ----
@@ -2485,7 +2487,8 @@ htmlRatingDay ::
 htmlRatingDay =
   maybe mempty (\q -> 
     do  " "
-        fromString (show q))
+        span_ [] $
+          fromString (show q))
 
 htmlRating ::
   Rating
@@ -2506,38 +2509,42 @@ htmlAviatorName ::
   -> String
   -> Html ()
 htmlAviatorName s f =
-  do  li_ [] "Name: "
-      span_ [] $
-        do  fromString (map toUpper s)
-            ", "
-            fromString f
+  do  li_ [] $
+        do  span_ [] "Name: "
+            span_ [] $
+              do  fromString (map toUpper s)
+                  ", "
+                  fromString f
 
 htmlAviatorARN ::
   [Digit]
   -> Html ()
 htmlAviatorARN a =
   when (not . null $ a) $
-    do  li_ [] "ARN: "
-        span_ [] $
-          fromString (a >>= show)
+    do  li_ [] $ 
+          do  span_ [] "ARN: "
+              span_ [] $
+                fromString (a >>= show)
 
 htmlAviatorDob ::
   Maybe Day
   -> Html ()
 htmlAviatorDob =
   maybe mempty (\q ->
-    do  li_ [] "DOB: "
-        span_ [] .
-          fromString . show $ q)
+    do  li_ [] $
+          do  span_ [] "DOB: "
+              span_ [] .
+                fromString . show $ q)
 
 htmlAviatorRatings ::
   [Rating]
   -> Html ()
 htmlAviatorRatings r =
   when (not . null $ r) $
-    do  li_ [] "Ratings: "
-        span_ [] .
-          htmlRatings $ r
+    do  li_ [] $ 
+          do  span_ [] "Ratings: "
+              span_ [] .
+                htmlRatings $ r
 
 htmlAviator ::
   Aviator
@@ -2605,8 +2612,7 @@ htmlTimeAmountZero z =
     then
       mempty
     else
-      span_ [] $
-        htmlTimeAmount z
+      htmlTimeAmount z
 
 htmlAviators ::
   [Aviator]
@@ -2644,8 +2650,9 @@ htmlTime ::
   Time
   -> Html ()
 htmlTime (Time t d) =
-  do  fromString (show t)
-      htmlTimeOfDayTime d
+  span_ [] $ 
+    do  fromString (show t)
+        htmlTimeOfDayTime d
 
 htmlSimulatorFlight ::
   SimulatorFlight
@@ -2693,7 +2700,7 @@ htmlBriefing ::
   Briefing
   -> Html ()
 htmlBriefing (Briefing n l t a m) =
-  span_ [] $
+  div_ [] $
     do  span_ [] $ 
           fromString n
         htmlLocation l
@@ -2705,17 +2712,21 @@ htmlEntry ::
   Entry AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
   -> Html ()
 htmlEntry (AircraftFlightEntry e ae) =
-  do  htmlAircraftFlight e
-      htmlAircraftFlightMeta e ae
+  do  div_ [] $
+        do  htmlAircraftFlight e
+            htmlAircraftFlightMeta e ae
 htmlEntry (SimulatorFlightEntry e se) =
-  do  htmlSimulatorFlight e
-      htmlSimulatorFlightMeta e se
+  do  div_ [] $
+        do  htmlSimulatorFlight e
+            htmlSimulatorFlightMeta e se
 htmlEntry (ExamEntry e ee) =
-  do  htmlExam e
-      htmlExamMeta e ee
+  do  div_ [] $
+        do  htmlExam e
+            htmlExamMeta e ee
 htmlEntry (BriefingEntry e be) =
-  do  htmlBriefing e
-      htmlBriefingMeta e be
+  do  div_ [] $
+        do  htmlBriefing e
+            -- htmlBriefingMeta e be
 
 htmlSimulatorFlightMeta ::
   SimulatorFlight
