@@ -2086,60 +2086,60 @@ loog =
   aviatorlogbook
     tonymorris
     [
-      BriefingEntry preflightBriefing preflightBriefingMeta
-      {-
-    , AircraftFlightEntry effectofcontrols effectofcontrolsMeta
+    -- BriefingEntry preflightBriefing preflightBriefingMeta
+      AircraftFlightEntry effectofcontrols effectofcontrolsMeta
+    {-
     , BriefingEntry effectofcontrolsBriefing effectofcontrolsBriefingMeta
-    , AircraftFlightEntry straightandlevel straightandlevelMeta
+    -- , AircraftFlightEntry straightandlevel straightandlevelMeta
     , BriefingEntry straightandlevelBriefing straightandlevelBriefingMeta
-    , AircraftFlightEntry climbinganddescending climbinganddescendingMeta
+    -- , AircraftFlightEntry climbinganddescending climbinganddescendingMeta
     , BriefingEntry climbinganddescendingBriefing climbinganddescendingBriefingMeta
-    , AircraftFlightEntry turning turningMeta
+    -- , AircraftFlightEntry turning turningMeta
     , BriefingEntry stallingBriefing1 stallingBriefing1Meta
-    , AircraftFlightEntry stalling1 stalling1Meta
+    -- , AircraftFlightEntry stalling1 stalling1Meta
     , BriefingEntry stallingBriefing2 stallingBriefing2Meta
-    , AircraftFlightEntry stalling2 stalling2Meta
-    , AircraftFlightEntry circuits1 circuits1Meta
-    , AircraftFlightEntry circuits2 circuits2Meta
-    , AircraftFlightEntry circuits3 circuits3Meta
-    , AircraftFlightEntry circuits4 circuits4Meta
+    -- , AircraftFlightEntry stalling2 stalling2Meta
+    -- , AircraftFlightEntry circuits1 circuits1Meta
+    -- , AircraftFlightEntry circuits2 circuits2Meta
+    -- , AircraftFlightEntry circuits3 circuits3Meta
+    -- , AircraftFlightEntry circuits4 circuits4Meta
     , BriefingEntry circuitemergenciesBriefing1 circuitemergenciesBriefing1Meta
-    , AircraftFlightEntry circuitemergencies1 circuitemergencies1Meta
+    -- , AircraftFlightEntry circuitemergencies1 circuitemergencies1Meta
     , BriefingEntry circuitemergenciesBriefing2 circuitemergenciesBriefing2Meta
-    , ExamEntry firstsoloexam firstsoloexamMeta
+    -- , ExamEntry firstsoloexam firstsoloexamMeta
     , BriefingEntry circuitemergenciesBriefing3 circuitemergenciesBriefing3Meta
-    , AircraftFlightEntry circuitemergencies2 circuitemergencies2Meta
+    -- , AircraftFlightEntry circuitemergencies2 circuitemergencies2Meta
     , BriefingEntry circuitemergenciesBriefing4 circuitemergenciesBriefing4Meta
-    , ExamEntry areasoloexam areasoloexamMeta
+    -- , ExamEntry areasoloexam areasoloexamMeta
     , BriefingEntry circuitemergenciesBriefing5 circuitemergenciesBriefing5Meta 
-    , AircraftFlightEntry circuitemergencies3 circuitemergencies3Meta
+    -- , AircraftFlightEntry circuitemergencies3 circuitemergencies3Meta
     , BriefingEntry circuitemergenciesBriefing6 circuitemergenciesBriefing6Meta 
-    , AircraftFlightEntry circuits5 circuits5Meta
-    , AircraftFlightEntry firstsolo firstsoloMeta
-    , AircraftFlightEntry circuitscrosswind1 circuitscrosswind1Meta
+    -- , AircraftFlightEntry circuits5 circuits5Meta
+    -- , AircraftFlightEntry firstsolo firstsoloMeta
+    -- , AircraftFlightEntry circuitscrosswind1 circuitscrosswind1Meta
     , BriefingEntry circuitscrosswindBriefing circuitscrosswindBriefingMeta
-    , AircraftFlightEntry circuitssolocheck1 circuitssolocheck1Meta
-    , AircraftFlightEntry circuitssolo1 circuitssolo1Meta
-    , AircraftFlightEntry circuitssolocheck2 circuitssolocheck2Meta
-    , AircraftFlightEntry circuitssolo2 circuitssolo2Meta
+    -- , AircraftFlightEntry circuitssolocheck1 circuitssolocheck1Meta
+    -- , AircraftFlightEntry circuitssolo1 circuitssolo1Meta
+    -- , AircraftFlightEntry circuitssolocheck2 circuitssolocheck2Meta
+    -- , AircraftFlightEntry circuitssolo2 circuitssolo2Meta
     , BriefingEntry practiceforcedlandingsBriefing practiceforcedlandingsBriefingMeta
-    , AircraftFlightEntry practiceforcedlandings1 practiceforcedlandings1Meta
-    , AircraftFlightEntry practiceforcedlandings2 practiceforcedlandings2Meta
+    -- , AircraftFlightEntry practiceforcedlandings1 practiceforcedlandings1Meta
+    -- , AircraftFlightEntry practiceforcedlandings2 practiceforcedlandings2Meta
     , BriefingEntry steepturnsBriefing steepturnsBriefingMeta
-    , AircraftFlightEntry steepturns steepturnsMeta
-    , AircraftFlightEntry sydneycircuit sydneycircuitMeta
-    , AircraftFlightEntry steepturnsandsideslipping steepturnsandsideslippingMeta
-    , AircraftFlightEntry circuitscrosswind2 circuitscrosswind2Meta
-    , AircraftFlightEntry areasolocheck areasolocheckMeta
+    -- , AircraftFlightEntry steepturns steepturnsMeta
+    -- , AircraftFlightEntry sydneycircuit sydneycircuitMeta
+    -- , AircraftFlightEntry steepturnsandsideslipping steepturnsandsideslippingMeta
+    -- , AircraftFlightEntry circuitscrosswind2 circuitscrosswind2Meta
+    -- , AircraftFlightEntry areasolocheck areasolocheckMeta
     , BriefingEntry areasoloBriefing1 areasoloBriefing1Meta
-    , AircraftFlightEntry areasolo1 areasolo1Meta
+    -- , AircraftFlightEntry areasolo1 areasolo1Meta
     , BriefingEntry areasoloBriefing2 areasoloBriefing2Meta 
-    , AircraftFlightEntry areasolo2 areasolo2Meta
-    , ExamEntry frolexam frolexamMeta
+    -- , AircraftFlightEntry areasolo2 areasolo2Meta
+    -- , ExamEntry frolexam frolexamMeta
     , BriefingEntry areasoloBriefing3 areasoloBriefing3Meta  
     , BriefingEntry basicinstrumentflightBriefing1 basicinstrumentflightBriefing1Meta
-    , SimulatorFlightEntry basicinstrumentflightsim basicinstrumentflightsimMeta
-    , AircraftFlightEntry basicinstrumentflight basicinstrumentflightMeta
+    -- , SimulatorFlightEntry basicinstrumentflightsim basicinstrumentflightsimMeta
+    -- , AircraftFlightEntry basicinstrumentflight basicinstrumentflightMeta
     , BriefingEntry basicinstrumentflightBriefing2 basicinstrumentflightBriefing2Meta
     -}
     ]
@@ -2210,17 +2210,16 @@ htmlAircraftUsageExpense ::
   -> Html ()
 htmlAircraftUsageExpense fl (AircraftUsageExpense perhour name) =
   let z = totalDayNight (fl ^. daynight)
-  in  div_ [class_ "AircraftUsageExpense"] .
-        ul_ $
-          do  when (not . null $ name) . li_ $
-                do  span_ [class_ "AircraftUsageExpense_name_key"] "Aircraft usage: "
-                    span_ [class_ "AircraftUsageExpense_name_value"] . fromString $ name
-              li_ $
-                do  span_ [class_ "AircraftUsageExpense_perhour_key"] "Per hour: "
-                    span_ [class_ "AircraftUsageExpense_perhour_value"] . fromString . ('$':) . showCentsAsDollars $ perhour
-              li_ $
-                do  span_ [class_ "AircraftUsageExpense_expense_key"] "Expense: "
-                    span_ [class_ "AircraftUsageExpense_expense"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
+  in  ul_ [class_ "AircraftUsageExpense"] $
+        do  when (not . null $ name) . li_ $
+              do  span_ [class_ "AircraftUsageExpense_name_key"] "Aircraft usage: "
+                  span_ [class_ "AircraftUsageExpense_name_value"] . fromString $ name
+            li_ $
+              do  span_ [class_ "AircraftUsageExpense_perhour_key"] "Per hour: "
+                  span_ [class_ "AircraftUsageExpense_perhour_value"] . fromString . ('$':) . showCentsAsDollars $ perhour
+            li_ $
+              do  span_ [class_ "AircraftUsageExpense_expense_key"] "Expense: "
+                  span_ [class_ "AircraftUsageExpense_expense"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
 
 htmlAircraftLandingExpense ::
   AircraftFlight
@@ -2580,14 +2579,15 @@ htmlCommand ::
   -> Command
   -> Html ()
 htmlCommand _ InCommand =
-  span_ [] "In-Command"
+  div_ [] $
+    span_ [] "In-Command"
 htmlCommand _ (ICUS a) =
-  span_ [] $ 
-    do  "In-Command Under-Instruction"
+  div_ [] $ 
+    do  span_ [] "In-Command Under-Instruction"
         htmlAviator a
 htmlCommand _ (Dual a) =
-  span_ [] $
-    do  "Dual Under-Instruction"
+  div_ [] $
+    do  span_ [] "Dual Under-Instruction"
         htmlAviator a
 
 strTimeAmount ::
@@ -2624,15 +2624,15 @@ htmlAircraftFlight ::
   AircraftFlight
   -> Html ()
 htmlAircraftFlight fl@(AircraftFlight n a c (DayNight d m) p o i) =
-  span_ [] $
+  div_ [] $
     do  span_ [] $
-          fromString n
-        span_ [] $
+          fromString n        
+        div_ [] $
           htmlAircraft fl a
-        span_ [] $
+        div_ [] $
           htmlCommand fl c
-        htmlTimeAmountZero d
-        htmlTimeAmountZero m
+        htmlTimeAmountZero d        
+        htmlTimeAmountZero m        
         span_ [] $
           htmlFlightPath fl p
         span_ [] $
@@ -2744,7 +2744,7 @@ htmlEntry (ExamEntry e ee) =
 htmlEntry (BriefingEntry e be) =
   do  div_ [] $
         do  htmlBriefing e
-            -- htmlBriefingMeta e be
+            htmlBriefingMeta e be
 
 htmlSimulatorFlightMeta ::
   SimulatorFlight
@@ -2771,7 +2771,7 @@ htmlEntries ::
   Entries AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
   -> Html ()
 htmlEntries (Entries es) =
-  mapM_ htmlEntry es
+  mapM_ (\e -> hr_ [] *> htmlEntry e) es
 
 htmlLogbook ::
   Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
@@ -2788,7 +2788,8 @@ writetest1 =
 
 test1 :: Html ()
 test1 =
-  doctypehtml_ (do head_ (title_ "title"); body_ test1')
+  do  doctype_
+      html_ [lang_ "en"] (do head_ (title_ "title"); body_ test1')
 
 test1' :: Html ()
 test1' =
@@ -2836,11 +2837,12 @@ test2' =
 
 test2 :: Html ()
 test2 =
-  doctypehtml_ $
-    do  head_ (title_ "title for test2")
-        body_ $ 
-          do  htmlAircraftFlight turning
-              test2'
+  do  doctype_
+      html_ [lang_ "en"] $
+        do  head_ (title_ "title for test2")
+            body_ $ 
+              do  htmlAircraftFlight turning
+                  test2'
 
 writetest2 :: IO ()
 writetest2 =
@@ -2848,11 +2850,12 @@ writetest2 =
 
 test3 :: Html ()
 test3 =
-  doctypehtml_ $
-    do  head_ $ 
-          title_ "logbook"
-        body_ $ 
-          htmlLogbook loog
+  do  doctype_
+      html_ [lang_ "en"] $
+        do  head_ $ 
+              title_ "logbook"
+            body_ $ 
+              htmlLogbook loog
 
 writetest3 :: IO ()
 writetest3 =
