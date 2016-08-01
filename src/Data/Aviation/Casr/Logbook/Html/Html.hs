@@ -2086,62 +2086,60 @@ loog =
   aviatorlogbook
     tonymorris
     [
-    -- BriefingEntry preflightBriefing preflightBriefingMeta
-      AircraftFlightEntry effectofcontrols effectofcontrolsMeta
-    {-
-    , BriefingEntry effectofcontrolsBriefing effectofcontrolsBriefingMeta
-    -- , AircraftFlightEntry straightandlevel straightandlevelMeta
+      BriefingEntry preflightBriefing preflightBriefingMeta
+    , AircraftFlightEntry effectofcontrols effectofcontrolsMeta
+    , AircraftFlightEntry straightandlevel straightandlevelMeta
     , BriefingEntry straightandlevelBriefing straightandlevelBriefingMeta
-    -- , AircraftFlightEntry climbinganddescending climbinganddescendingMeta
+    , BriefingEntry effectofcontrolsBriefing effectofcontrolsBriefingMeta
+    , AircraftFlightEntry climbinganddescending climbinganddescendingMeta
     , BriefingEntry climbinganddescendingBriefing climbinganddescendingBriefingMeta
-    -- , AircraftFlightEntry turning turningMeta
+    , AircraftFlightEntry turning turningMeta
     , BriefingEntry stallingBriefing1 stallingBriefing1Meta
-    -- , AircraftFlightEntry stalling1 stalling1Meta
+    , AircraftFlightEntry stalling1 stalling1Meta
     , BriefingEntry stallingBriefing2 stallingBriefing2Meta
-    -- , AircraftFlightEntry stalling2 stalling2Meta
-    -- , AircraftFlightEntry circuits1 circuits1Meta
-    -- , AircraftFlightEntry circuits2 circuits2Meta
-    -- , AircraftFlightEntry circuits3 circuits3Meta
-    -- , AircraftFlightEntry circuits4 circuits4Meta
+    , AircraftFlightEntry stalling2 stalling2Meta
+    , AircraftFlightEntry circuits1 circuits1Meta
+    , AircraftFlightEntry circuits2 circuits2Meta
+    , AircraftFlightEntry circuits3 circuits3Meta
+    , AircraftFlightEntry circuits4 circuits4Meta
     , BriefingEntry circuitemergenciesBriefing1 circuitemergenciesBriefing1Meta
-    -- , AircraftFlightEntry circuitemergencies1 circuitemergencies1Meta
+    , AircraftFlightEntry circuitemergencies1 circuitemergencies1Meta
     , BriefingEntry circuitemergenciesBriefing2 circuitemergenciesBriefing2Meta
-    -- , ExamEntry firstsoloexam firstsoloexamMeta
+    , ExamEntry firstsoloexam firstsoloexamMeta
     , BriefingEntry circuitemergenciesBriefing3 circuitemergenciesBriefing3Meta
-    -- , AircraftFlightEntry circuitemergencies2 circuitemergencies2Meta
+    , AircraftFlightEntry circuitemergencies2 circuitemergencies2Meta
     , BriefingEntry circuitemergenciesBriefing4 circuitemergenciesBriefing4Meta
-    -- , ExamEntry areasoloexam areasoloexamMeta
+    , ExamEntry areasoloexam areasoloexamMeta
     , BriefingEntry circuitemergenciesBriefing5 circuitemergenciesBriefing5Meta 
-    -- , AircraftFlightEntry circuitemergencies3 circuitemergencies3Meta
+    , AircraftFlightEntry circuitemergencies3 circuitemergencies3Meta
     , BriefingEntry circuitemergenciesBriefing6 circuitemergenciesBriefing6Meta 
-    -- , AircraftFlightEntry circuits5 circuits5Meta
-    -- , AircraftFlightEntry firstsolo firstsoloMeta
-    -- , AircraftFlightEntry circuitscrosswind1 circuitscrosswind1Meta
+    , AircraftFlightEntry circuits5 circuits5Meta
+    , AircraftFlightEntry firstsolo firstsoloMeta
+    , AircraftFlightEntry circuitscrosswind1 circuitscrosswind1Meta
     , BriefingEntry circuitscrosswindBriefing circuitscrosswindBriefingMeta
-    -- , AircraftFlightEntry circuitssolocheck1 circuitssolocheck1Meta
-    -- , AircraftFlightEntry circuitssolo1 circuitssolo1Meta
-    -- , AircraftFlightEntry circuitssolocheck2 circuitssolocheck2Meta
-    -- , AircraftFlightEntry circuitssolo2 circuitssolo2Meta
+    , AircraftFlightEntry circuitssolocheck1 circuitssolocheck1Meta
+    , AircraftFlightEntry circuitssolo1 circuitssolo1Meta
+    , AircraftFlightEntry circuitssolocheck2 circuitssolocheck2Meta
+    , AircraftFlightEntry circuitssolo2 circuitssolo2Meta
     , BriefingEntry practiceforcedlandingsBriefing practiceforcedlandingsBriefingMeta
-    -- , AircraftFlightEntry practiceforcedlandings1 practiceforcedlandings1Meta
-    -- , AircraftFlightEntry practiceforcedlandings2 practiceforcedlandings2Meta
+    , AircraftFlightEntry practiceforcedlandings1 practiceforcedlandings1Meta
+    , AircraftFlightEntry practiceforcedlandings2 practiceforcedlandings2Meta
     , BriefingEntry steepturnsBriefing steepturnsBriefingMeta
-    -- , AircraftFlightEntry steepturns steepturnsMeta
-    -- , AircraftFlightEntry sydneycircuit sydneycircuitMeta
-    -- , AircraftFlightEntry steepturnsandsideslipping steepturnsandsideslippingMeta
-    -- , AircraftFlightEntry circuitscrosswind2 circuitscrosswind2Meta
-    -- , AircraftFlightEntry areasolocheck areasolocheckMeta
+    , AircraftFlightEntry steepturns steepturnsMeta
+    , AircraftFlightEntry sydneycircuit sydneycircuitMeta
+    , AircraftFlightEntry steepturnsandsideslipping steepturnsandsideslippingMeta
+    , AircraftFlightEntry circuitscrosswind2 circuitscrosswind2Meta
+    , AircraftFlightEntry areasolocheck areasolocheckMeta
     , BriefingEntry areasoloBriefing1 areasoloBriefing1Meta
-    -- , AircraftFlightEntry areasolo1 areasolo1Meta
+    , AircraftFlightEntry areasolo1 areasolo1Meta
     , BriefingEntry areasoloBriefing2 areasoloBriefing2Meta 
-    -- , AircraftFlightEntry areasolo2 areasolo2Meta
-    -- , ExamEntry frolexam frolexamMeta
-    , BriefingEntry areasoloBriefing3 areasoloBriefing3Meta  
+    , AircraftFlightEntry areasolo2 areasolo2Meta
+    , ExamEntry frolexam frolexamMeta
+    , BriefingEntry areasoloBriefing3 areasoloBriefing3Meta
     , BriefingEntry basicinstrumentflightBriefing1 basicinstrumentflightBriefing1Meta
-    -- , SimulatorFlightEntry basicinstrumentflightsim basicinstrumentflightsimMeta
-    -- , AircraftFlightEntry basicinstrumentflight basicinstrumentflightMeta
+    , SimulatorFlightEntry basicinstrumentflightsim basicinstrumentflightsimMeta
+    , AircraftFlightEntry basicinstrumentflight basicinstrumentflightMeta
     , BriefingEntry basicinstrumentflightBriefing2 basicinstrumentflightBriefing2Meta
-    -}
     ]
 
 ----
@@ -2210,16 +2208,17 @@ htmlAircraftUsageExpense ::
   -> Html ()
 htmlAircraftUsageExpense fl (AircraftUsageExpense perhour name) =
   let z = totalDayNight (fl ^. daynight)
-  in  ul_ [class_ "AircraftUsageExpense"] $
-        do  when (not . null $ name) . li_ $
-              do  span_ [class_ "AircraftUsageExpense_name_key"] "Aircraft usage: "
-                  span_ [class_ "AircraftUsageExpense_name_value"] . fromString $ name
-            li_ $
-              do  span_ [class_ "AircraftUsageExpense_perhour_key"] "Per hour: "
-                  span_ [class_ "AircraftUsageExpense_perhour_value"] . fromString . ('$':) . showCentsAsDollars $ perhour
-            li_ $
-              do  span_ [class_ "AircraftUsageExpense_expense_key"] "Expense: "
-                  span_ [class_ "AircraftUsageExpense_expense"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
+  in  div_ [class_ "AircraftUsageExpense"] .
+        ul_ $
+          do  when (not . null $ name) . li_ $
+                do  span_ [class_ "AircraftUsageExpense_name_key"] "Aircraft usage: "
+                    span_ [class_ "AircraftUsageExpense_name_value"] . fromString $ name
+              li_ $
+                do  span_ [class_ "AircraftUsageExpense_perhour_key"] "Per hour: "
+                    span_ [class_ "AircraftUsageExpense_perhour_value"] . fromString . ('$':) . showCentsAsDollars $ perhour
+              li_ $
+                do  span_ [class_ "AircraftUsageExpense_expense_key"] "Expense: "
+                    span_ [class_ "AircraftUsageExpense_expense"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
 
 htmlAircraftLandingExpense ::
   AircraftFlight
@@ -2406,7 +2405,7 @@ htmlTrackLogs fl x =
   do span_ [] $
        "Track Log"
      ul_ .
-       mapM_ (htmlTrackLog fl) $ x
+       mapM_ (li_ [] . htmlTrackLog fl) $ x
 
 htmlVisualisations ::
   AircraftFlight
@@ -2416,7 +2415,7 @@ htmlVisualisations fl x =
   do span_ [] $
        "Visualisation"
      ul_ .
-       mapM_ (htmlVisualisation fl) $ x
+       mapM_ (li_ [] . htmlVisualisation fl) $ x
 
 htmlImages ::
   AircraftFlight
@@ -2426,7 +2425,7 @@ htmlImages fl x =
   do span_ [] $
        "Image"
      ul_ .
-       mapM_ (htmlImage fl) $ x
+       mapM_ (li_ [] . htmlImage fl) $ x
 
 htmlVideos ::
   AircraftFlight
@@ -2436,7 +2435,7 @@ htmlVideos fl x =
   do span_ [] $
        "Video"
      ul_ .
-       mapM_ (htmlVideo fl) $ x
+       mapM_ (li_ [] . htmlVideo fl) $ x
 
 htmlAircraftFlightExpenses ::
   AircraftFlight
@@ -2446,7 +2445,7 @@ htmlAircraftFlightExpenses fl x =
   do span_ [] $
        "Aircraft Flight Expense"
      ul_ .
-       mapM_ (htmlAircraftFlightExpense fl) $ x
+       mapM_ (li_ [] . htmlAircraftFlightExpense fl) $ x
 
 htmlAircraftFlightMeta ::
   AircraftFlight
@@ -2658,11 +2657,11 @@ htmlSimulatorFlight ::
   SimulatorFlight
   -> Html ()
 htmlSimulatorFlight (SimulatorFlight n t y o i) =
-  span_ [] $
+  div_ [] $
     do  span_ [] (fromString n)
         htmlTime t
         span_ [] (fromString y)
-        span_ [] $
+        div_ [] $
           htmlAviators o
         htmlTimeAmountZero i
 
@@ -2694,7 +2693,7 @@ htmlExam ::
   Exam
   -> Html ()
 htmlExam (Exam n l t a r m) =
-  span_ [] $
+  div_ [] $
     do  span_ [] $ 
           fromString n
         htmlLocation l
@@ -2860,4 +2859,13 @@ test3 =
 writetest3 :: IO ()
 writetest3 =
   renderToFile "/tmp/z.html" test3
-          
+
+--
+
+sspan_ ::
+  [Attribute]
+  -> String
+  -> Html ()
+sspan_ c =
+  span_ c . fromString
+
