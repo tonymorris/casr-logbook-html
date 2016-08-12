@@ -2277,6 +2277,26 @@ htmlExamExpense _ (ExamExpense amount name) =
             do  span_ [class_ "ExamExpense_expense_key"] "Expense: "
                 span_ [class_ "ExamExpense_expense_value"] . fromString . ('$':) . showCentsAsDollars $ amount
 
+{-
+ul_ [] $
+          do  li_ [] $
+                do  span_ [class_ "key"] "Time: "
+                    span_ [class_ "value"] .
+                      htmlTime $ t
+              li_ [] $
+                do  span_ [class_ "key"] "Location: "
+                    span_ [class_ "value"] .
+                      htmlLocation $ l
+              li_ [] $
+                do  span_ [class_ "key"] "Amount: "
+                    span_ [class_ "value"] .
+                      htmlTimeAmountZero $ m
+              li_ [] $
+                do  span_ [class_ "key"] "Briefer: "
+                    span_ [class_ "value"] .
+                      htmlAviatorShort $ a
+-}
+                      
 htmlBriefingExpense ::
   Briefing
   -> BriefingExpense
@@ -2299,7 +2319,7 @@ htmlVisualisation ::
   AircraftFlight
   -> Visualisation
   -> Html ()
-htmlVisualisation _ (Doarama i e n) =
+htmlVisualisation _ (Doarama i _ n) =
   let n' = fromMaybe "Visualisation" n
   in  do  a_ [href_ ("http://doarama.com/view/" <> Text.pack i)] $ 
             span_ [class_ "Visualisation_name"] (fromString n')
@@ -2498,20 +2518,32 @@ htmlRating (Rating n d) =
     do  span_ [] (fromString n)
         htmlRatingDay d
 
+htmlRatingShort ::
+  Rating
+  -> Html ()
+htmlRatingShort (Rating n _) =
+  span_ [] (fromString n)
+
 htmlRatings ::
   [Rating]
   -> Html ()
 htmlRatings =
   sequence_ . intersperse ", " . map htmlRating
 
+htmlRatingsShort ::
+  [Rating]
+  -> Html ()
+htmlRatingsShort =
+  sequence_ . intersperse ", " . map htmlRatingShort
+
 htmlAviatorName ::
   String
   -> String
   -> Html ()
 htmlAviatorName s f =
-  do  li_ [] $
-        do  span_ [] "Name: "
-            span_ [] $
+  do  li_ [id_ "aviatorname"] $
+        do  span_ [class_ "key"] "Name: "
+            span_ [class_ "value"] $
               do  fromString (map toUpper s)
                   ", "
                   fromString f
@@ -2521,9 +2553,9 @@ htmlAviatorARN ::
   -> Html ()
 htmlAviatorARN a =
   when (not . null $ a) $
-    do  li_ [] $ 
-          do  span_ [] "ARN: "
-              span_ [] $
+    do  li_ [id_ "aviatorarn"] $ 
+          do  span_ [class_ "key"] "ARN: "
+              span_ [class_ "value"] $
                 fromString (a >>= show)
 
 htmlAviatorDob ::
@@ -2531,9 +2563,9 @@ htmlAviatorDob ::
   -> Html ()
 htmlAviatorDob =
   maybe mempty (\q ->
-    do  li_ [] $
-          do  span_ [] "DOB: "
-              span_ [] .
+    do  li_ [id_ "aviatordob"] $
+          do  span_ [class_ "key"] "Date of Birth: "
+              span_ [class_ "value"] .
                 fromString . show $ q)
 
 htmlAviatorRatings ::
@@ -2541,22 +2573,34 @@ htmlAviatorRatings ::
   -> Html ()
 htmlAviatorRatings r =
   when (not . null $ r) $
-    do  li_ [] $ 
-          do  span_ [] "Ratings: "
-              span_ [] .
+    do  li_ [id_ "aviatorratings"] $ 
+          do  span_ [class_ "key"] "Ratings: "
+              span_ [class_ "value"] .
                 htmlRatings $ r
 
 htmlAviator ::
   Aviator
   -> Html ()
 htmlAviator (Aviator s f a d r) =
-  div_ [] .
+  div_ [id_ "aviator", class_ "aviator"] .
     ul_ [] $
       do  htmlAviatorName s f
           htmlAviatorARN a
           htmlAviatorDob d
           htmlAviatorRatings r
-                
+            
+htmlAviatorShort ::
+  Aviator
+  -> Html ()    
+htmlAviatorShort (Aviator s f a _ r) =
+  do  fromString f
+      " "
+      fromString s
+      " "
+      fromString (a >>= show)
+      " "
+      htmlRatingsShort r
+
 htmlFlightPoint ::
   AircraftFlight
   -> FlightPoint
@@ -2585,11 +2629,11 @@ htmlCommand _ InCommand =
 htmlCommand _ (ICUS a) =
   div_ [] $ 
     do  span_ [] "In-Command Under-Instruction"
-        htmlAviator a
+        htmlAviatorShort a
 htmlCommand _ (Dual a) =
   div_ [] $
     do  span_ [] "Dual Under-Instruction"
-        htmlAviator a
+        htmlAviatorShort a
 
 strTimeAmount ::
   TimeAmount
@@ -2670,17 +2714,16 @@ htmlSimulatorFlight (SimulatorFlight n t y o i) =
 htmlLocation ::
   Location
   -> Html ()
-htmlLocation (Location n t o) =
-  div_ [] $
-    do  fromString n
-        " "
-        let t' = fromString (show t)
-            o' = fromString (show o)
-        span_ [] $
-          a_ [href_ ("http://www.openstreetmap.org/?mlat=" <> t' <> "&mlon=" <> o' <> "#map=16/" <> t' <> "/" <> o')] "openstreetmap"
-        " "
-        span_ [] $
-          a_ [href_ ("https://www.google.com/maps/?q=" <> t' <> "," <> o')] "google maps"
+htmlLocation (Location n t o) =  
+  do  fromString n
+      " "
+      let t' = fromString (show t)
+          o' = fromString (show o)
+      span_ [] $
+        a_ [href_ ("http://www.openstreetmap.org/?mlat=" <> t' <> "&mlon=" <> o' <> "#map=16/" <> t' <> "/" <> o')] "openstreetmap"
+      " "
+      span_ [] $
+        a_ [href_ ("https://www.google.com/maps/?q=" <> t' <> "," <> o')] "google maps"
         
 htmlExamResult ::
   Int
@@ -2700,14 +2743,14 @@ htmlExam (Exam n l t a r m) =
           fromString n
         htmlLocation l
         htmlTime t
-        htmlAviator a
+        htmlAviatorShort a
         htmlExamResult r m
 
 htmlBriefingName ::
   String
   -> Html ()
 htmlBriefingName n =
-  span_ [] $ 
+  h3_ [] $ 
     fromString n
 
 htmlBriefing ::
@@ -2715,38 +2758,100 @@ htmlBriefing ::
   -> Html ()
 htmlBriefing (Briefing n l t a m) =
   div_ [] $
-    do  span_ [] $ "Briefing"
-        " "
-        htmlBriefingName n
-        " on "
-        htmlTime t
-        " at "
-        htmlLocation l
-        " for "
-        htmlTimeAmountZero m
-        " by "
-        htmlAviator a
+    do  htmlBriefingName n
+        ul_ [] $
+          do  li_ [] $
+                do  span_ [class_ "key"] "Time: "
+                    span_ [class_ "value"] .
+                      htmlTime $ t
+              li_ [] $
+                do  span_ [class_ "key"] "Location: "
+                    span_ [class_ "value"] .
+                      htmlLocation $ l
+              li_ [] $
+                do  span_ [class_ "key"] "Amount: "
+                    span_ [class_ "value"] .
+                      htmlTimeAmountZero $ m
+              li_ [] $
+                do  span_ [class_ "key"] "Briefer: "
+                    span_ [class_ "value"] .
+                      htmlAviatorShort $ a
+
+space2dot ::
+  String
+  -> String
+space2dot =
+  map $ \c -> case c of 
+                ' ' -> '.'
+                _   -> c
+
+htmlEntryTag ::
+  Entry a b c d
+  -> Html ()
+htmlEntryTag (AircraftFlightEntry e _) =
+  let lk = space2dot . concat $
+                          [
+                            "FLT_"
+                          , e ^. aircraftflightname
+                          , "_"
+                          , e ^. flightaircraft . aircraftRegistration
+                          , "_"
+                          , e ^. flightpath . flightStart . point
+                          , "-"
+                          , e ^. flightpath . flightEnd . point
+                          ]
+  in  a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "FLT"
+htmlEntryTag (SimulatorFlightEntry e _) =
+  let lk = space2dot . concat $
+                          [
+                            "SIM_"
+                          , e ^. simulatorflightname
+                          , "_"
+                          , e ^. simulatortype
+                          ]
+  in  a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "SIM"
+htmlEntryTag (ExamEntry e _) =
+  let lk = space2dot . concat $
+                          [
+                            "EXM_"
+                          , e ^. examName
+                          , "_"
+                          , show (e ^. examTime . daytime)
+                          ]
+  in  a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "EXM"
+htmlEntryTag (BriefingEntry e _) =
+  let lk = space2dot . concat $
+                          [
+                            "BRF_"
+                          , e ^. briefingName
+                          , "_"
+                          , show (e ^. briefingTime . daytime)
+                          ]
+  in  a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "BRF"
 
 htmlEntry ::
   Entry AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
   -> Html ()
-htmlEntry (AircraftFlightEntry e ae) =
-  do  div_ [] $
-        do  htmlAircraftFlight e
-            htmlAircraftFlightMeta e ae
-htmlEntry (SimulatorFlightEntry e se) =
-  do  div_ [] $
-        do  htmlSimulatorFlight e
-            htmlSimulatorFlightMeta e se
-htmlEntry (ExamEntry e ee) =
-  do  div_ [] $
-        do  htmlExam e
-            htmlExamMeta e ee
-htmlEntry (BriefingEntry e be) =
-  do  div_ [] $
-        do  htmlBriefing e
-            htmlBriefingMeta e be
-
+htmlEntry x =
+  do  htmlEntryTag x
+      case x of
+        AircraftFlightEntry e ae ->
+          do  div_ [] $
+                do  htmlAircraftFlight e
+                    htmlAircraftFlightMeta e ae
+        SimulatorFlightEntry e ae ->
+          do  div_ [] $
+                do  htmlSimulatorFlight e
+                    htmlSimulatorFlightMeta e ae
+        ExamEntry e ae ->
+          do  div_ [] $
+                do  htmlExam e
+                    htmlExamMeta e ae
+        BriefingEntry e ae ->
+          do  div_ [] $
+                do  htmlBriefing e
+                    htmlBriefingMeta e ae
+  
 htmlSimulatorFlightMeta ::
   SimulatorFlight
   -> SimulatorFlightMeta
@@ -2810,14 +2915,14 @@ htmlLogbookDocument b =
                   link_ [href_ "/atom.xml", rel_ "alternate", type_ "application/atom+xml", title_ "Atom feed"]
                   script_ [type_ "text/javascript", src_ "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"] ("" :: Text.Text)
                   script_ [type_ "text/javascript", src_ "https://raw.github.com/Mathapedia/LaTeX2HTML5/master/latex2html5.min.js"] ("" :: Text.Text)                  
-            body_ [style_ "casr-logbook"] $ 
+            body_ [class_ "casr-logbook"] $ 
               do  htmlLogbookHeader b
                   htmlLogbook b
 
 htmlLogbookHeader ::
   Logbook a b c d
   -> Html ()
-htmlLogbookHeader b =
+htmlLogbookHeader _ =
   do  div_ [id_ "header", class_ "header"] $
         h1_ "Pilot Personal Log Book"
       div_ [id_ "subheader", class_ "subheader"] $
