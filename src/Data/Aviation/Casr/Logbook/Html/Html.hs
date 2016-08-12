@@ -2080,14 +2080,15 @@ basicinstrumentflightBriefing2Meta =
   BriefingMeta
     [BriefingExpense 7700 "Briefing - Basic"]
 
-loog ::
+logbook1007036 ::
   Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
-loog =
+logbook1007036 =
   aviatorlogbook
     tonymorris
     [
       BriefingEntry preflightBriefing preflightBriefingMeta
     , AircraftFlightEntry effectofcontrols effectofcontrolsMeta
+    {-
     , AircraftFlightEntry straightandlevel straightandlevelMeta
     , BriefingEntry straightandlevelBriefing straightandlevelBriefingMeta
     , BriefingEntry effectofcontrolsBriefing effectofcontrolsBriefingMeta
@@ -2140,6 +2141,7 @@ loog =
     , SimulatorFlightEntry basicinstrumentflightsim basicinstrumentflightsimMeta
     , AircraftFlightEntry basicinstrumentflight basicinstrumentflightMeta
     , BriefingEntry basicinstrumentflightBriefing2 basicinstrumentflightBriefing2Meta
+    -}
     ]
 
 ----
@@ -2301,7 +2303,7 @@ htmlVisualisation _ (Doarama i e n) =
   let n' = fromMaybe "Visualisation" n
   in  do  a_ [href_ ("http://doarama.com/view/" <> Text.pack i)] $ 
             span_ [class_ "Visualisation_name"] (fromString n')
-          p_ (iframe_ [src_ ("http://www.doarama.com/embed?k=" <> Text.pack e), width_ "560", height_ "315", termWith "allowfullscreen" [] "allowfullscreen"] "")
+          -- p_ (iframe_ [src_ ("http://www.doarama.com/embed?k=" <> Text.pack e), width_ "560", height_ "315", termWith -- "allowfullscreen" [] "allowfullscreen"] "")
 
 strImageType ::
   ImageType
@@ -2781,84 +2783,53 @@ htmlLogbook (Logbook a es) =
 
 ----
 
-writetest1 :: IO ()
-writetest1 =
-  renderToFile "/tmp/x.html" test1
+htmlTitleAviator ::
+  Aviator
+  -> Html ()
+htmlTitleAviator a =
+  fromString (concat
+                [
+                  a ^. firstname
+                , " "
+                , a ^. surname
+                , " ("
+                , show =<< (a ^. arn)
+                , ")"
+                ])
 
-test1 :: Html ()
-test1 =
-  do  doctype_
-      html_ [lang_ "en"] (do head_ (title_ "title"); body_ test1')
-
-test1' :: Html ()
-test1' =
-  do  htmlAircraftUsageExpense turning (AircraftUsageExpense 34107 "expense")
-      hr_ []
-      htmlVisualisation turning (Doarama "595690" "6rAdypE" Nothing)
-      hr_ []
-      htmlImage turning (Image "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082411.jpg" Jpg Nothing Nothing)
-      hr_ []
-      htmlTrackLog turning (TrackLog "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/20151218-vh-ldo.gpx" Gpx (Just "Garmin 62s") (Just "test tracklog"))
-      hr_ []
-      htmlTrackLog turning (TrackLog "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20151218-vh-ldo.png" (ImageTrackLog Png) (Just "gpsvisualizer.com") (Just "test image tracklog"))
-      hr_ []
-      htmlVideo turning (Video "13BVior4VmY" YouTube (Just "a source") (Just " a name"))
-      hr_ []
-      htmlAircraft turning vhvvo
-      hr_ []
-      htmlAviator tonymorris
-
-test2' :: Html ()
-test2' =
-  htmlAircraftFlightMeta
-    turning $
-      AircraftFlightMeta
-        [
-          TrackLog "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20151218-vh-ldo.png" (ImageTrackLog Png) (Just "gpsvisualizer.com") (Just "test image tracklog")
-        ]
-
-        [
-          Doarama "595690" "6rAdypE" Nothing
-        ]
-
-        [
-          Image "https://raw.githubusercontent.com/tonymorris/ppl/master/images/20160122-vh-afr/20160122_082411.jpg" Jpg Nothing Nothing
-        ]
-
-        [
-          Video "13BVior4VmY" YouTube (Just "a source") (Just " a name")
-        ]
-
-        [
-          ExpenseAircraftUsage (AircraftUsageExpense 34107 "usage expense")
-        , ExpenseAircraftLanding (AircraftLandingExpense 43177 "landing expense")
-        ]
-
-test2 :: Html ()
-test2 =
-  do  doctype_
-      html_ [lang_ "en"] $
-        do  head_ (title_ "title for test2")
-            body_ $ 
-              do  htmlAircraftFlight turning
-                  test2'
-
-writetest2 :: IO ()
-writetest2 =
-  renderToFile "/tmp/y.html" test2
-
-test3 :: Html ()
-test3 =
+htmlLogbookDocument ::
+  Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
+  -> Html ()
+htmlLogbookDocument b =
   do  doctype_
       html_ [lang_ "en"] $
         do  head_ $ 
-              title_ "logbook"
-            body_ $ 
-              htmlLogbook loog
+              do  title_ ("Pilot Personal Logbook " <> toHtmlRaw (" &mdash; " :: Text.Text) <> htmlTitleAviator (b ^. logbookaviator))
+                  link_ [href_ "https://fonts.googleapis.com/css?family=Inconsolata:400,700", rel_ "stylesheet", type_ "text/css"]
+                  link_ [href_ "casr-logbook.css", rel_ "stylesheet", type_ "text/css"]
+                  link_ [href_ "/atom.xml", rel_ "alternate", type_ "application/atom+xml", title_ "Atom feed"]
+                  script_ [type_ "text/javascript", src_ "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"] ("" :: Text.Text)
+                  script_ [type_ "text/javascript", src_ "https://raw.github.com/Mathapedia/LaTeX2HTML5/master/latex2html5.min.js"] ("" :: Text.Text)                  
+            body_ [style_ "casr-logbook"] $ 
+              do  htmlLogbookHeader b
+                  htmlLogbook b
 
-writetest3 :: IO ()
-writetest3 =
-  renderToFile "/tmp/z.html" test3
+htmlLogbookHeader ::
+  Logbook a b c d
+  -> Html ()
+htmlLogbookHeader b =
+  do  div_ [id_ "header", class_ "header"] $
+        h1_ "Pilot Personal Log Book"
+      div_ [id_ "subheader", class_ "subheader"] $
+        h2_ $
+          do  "Civil Aviation Safety Regulation 1998 (61.345)"
+              span_ [class_ "austlii"] $
+                a_ [href_ "http://www.austlii.edu.au/au/legis/cth/consol_reg/casr1998333/s61.345.html"] "austlii.edu.au"
+  
+writetest ::
+  IO ()
+writetest =
+  renderToFile "/tmp/z.html" (htmlLogbookDocument logbook1007036)
 
 --
 
@@ -2869,3 +2840,64 @@ sspan_ ::
 sspan_ c =
   span_ c . fromString
 
+----
+
+{-
+
+html{
+  font-family: "Inconsolata";
+  color: black;
+}
+
+a {
+  text-decoration: none;
+}
+
+.casr-logbook {
+  max-width: 940px;
+  margin: 10px auto 10px auto;
+}
+
+.header {
+  text-align: center;
+}
+
+.subheader {
+  font-size: xx-small;
+  text-align: center;
+}
+
+.austlii {
+  font-style: italic;
+}
+
+
+
+/* ------- */
+
+.title {
+  text-align: center;
+}
+
+.subtitle {
+  font-size: xx-small;
+  text-align: center;
+}
+
+.austlii {
+  font-style: italic;
+}
+
+.personal {
+  background-color: #d3d3d3;
+}
+
+.heading {
+  font-weight: bold;
+}
+
+.personalinfo {
+  font-size: small;
+}
+
+-}
