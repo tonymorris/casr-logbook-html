@@ -41,6 +41,15 @@ a {
   font-size: small;
 }
 
+.briefingmetaheader {
+  font-weight: bold;
+}
+
+.briefingexpensename {
+  font-size: xx-small;
+  font-style: italic;
+}
+
 /* ------- */
 
 .title {

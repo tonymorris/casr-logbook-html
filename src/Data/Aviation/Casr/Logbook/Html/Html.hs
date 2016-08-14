@@ -2277,43 +2277,21 @@ htmlExamExpense _ (ExamExpense amount name) =
             do  span_ [class_ "ExamExpense_expense_key"] "Expense: "
                 span_ [class_ "ExamExpense_expense_value"] . fromString . ('$':) . showCentsAsDollars $ amount
 
-{-
-ul_ [] $
-          do  li_ [] $
-                do  span_ [class_ "key"] "Time: "
-                    span_ [class_ "value"] .
-                      htmlTime $ t
-              li_ [] $
-                do  span_ [class_ "key"] "Location: "
-                    span_ [class_ "value"] .
-                      htmlLocation $ l
-              li_ [] $
-                do  span_ [class_ "key"] "Amount: "
-                    span_ [class_ "value"] .
-                      htmlTimeAmountZero $ m
-              li_ [] $
-                do  span_ [class_ "key"] "Briefer: "
-                    span_ [class_ "value"] .
-                      htmlAviatorShort $ a
--}
-                      
 htmlBriefingExpense ::
   Briefing
   -> BriefingExpense
   -> Html ()
 htmlBriefingExpense br (BriefingExpense perhour name) =
   let z = br ^. briefingTimeAmount
-  in  div_ [class_ "BriefingExpense"] .
-        ul_ $
-          do  when (not . null $ name) . li_ $
-                do  span_ [class_ "BriefingExpense_name_key"] "Briefing: "
-                    span_ [class_ "BriefingExpense_name_value"] . fromString $ name
-              li_ $
-                do  span_ [class_ "BriefingExpense_perhour_key"] "Per hour: "
-                    span_ [class_ "BriefingExpense_perhour_value"] . fromString . ('$':) . showCentsAsDollars $ perhour
-              li_ $
-                do  span_ [class_ "BriefingExpense_expense_key"] "Expense: "
-                    span_ [class_ "BriefingExpenseSimulatorFlightExpense_expense"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
+  in  span_ [class_ "briefingexpense"] $
+        do  span_ [class_ "briefingexpensecost"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
+            span_ [class_ "briefingexpensephrase"] " at "
+            span_ [class_ "briefingexpenseperhour"] . fromString . ('$':) . showCentsAsDollars $ perhour
+            span_ [class_ "briefingexpensephrase"] " per hour"
+            when (not . null $ name) . span_ [class_ "briefingexpensename"] $
+              do  " ("
+                  fromString name
+                  ")"
 
 htmlVisualisation ::
   AircraftFlight
@@ -2715,15 +2693,18 @@ htmlLocation ::
   Location
   -> Html ()
 htmlLocation (Location n t o) =  
-  do  fromString n
-      " "
-      let t' = fromString (show t)
-          o' = fromString (show o)
-      span_ [] $
-        a_ [href_ ("http://www.openstreetmap.org/?mlat=" <> t' <> "&mlon=" <> o' <> "#map=16/" <> t' <> "/" <> o')] "openstreetmap"
-      " "
-      span_ [] $
-        a_ [href_ ("https://www.google.com/maps/?q=" <> t' <> "," <> o')] "google maps"
+  span_ [class_ "location"] $ 
+    do  fromString n
+        " "
+        let t' = fromString (show t)
+            o' = fromString (show o)
+        span_ [class_ "locationopenstreetmap"] $
+          a_ [href_ ("http://www.openstreetmap.org/?mlat=" <> t' <> "&mlon=" <> o' <> "#map=16/" <> t' <> "/" <> o')] 
+          "osm"
+        " "
+        span_ [class_ "locationgooglemaps"] $
+          a_ [href_ ("https://www.google.com/maps/?q=" <> t' <> "," <> o')]
+          "gmap"
         
 htmlExamResult ::
   Int
@@ -2871,7 +2852,10 @@ htmlBriefingMeta ::
   -> BriefingMeta
   -> Html ()
 htmlBriefingMeta b (BriefingMeta s) =
-  mapM_ (htmlBriefingExpense b) s
+  div_ [class_ "briefingmeta"] $
+    do  span_ [class_ "briefingmetaheader"] "Expenses"
+        ul_ [] $
+          mapM_ (li_ [] . htmlBriefingExpense b) s
 
 htmlEntries ::
   Entries AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
@@ -2928,6 +2912,7 @@ htmlLogbookHeader _ =
       div_ [id_ "subheader", class_ "subheader"] $
         h2_ $
           do  "Civil Aviation Safety Regulation 1998 (61.345)"
+              " "
               span_ [class_ "austlii"] $
                 a_ [href_ "http://www.austlii.edu.au/au/legis/cth/consol_reg/casr1998333/s61.345.html"] "austlii.edu.au"
   
