@@ -13,6 +13,7 @@ import Data.Aviation.Casr.Logbook
 import Control.Lens
 import Data.Char
 import Data.Digit
+import Data.Foldable
 import Data.List
 import Data.Time
 import Data.String
@@ -2472,12 +2473,12 @@ htmlAircraft ::
   -> Aircraft
   -> Html ()
 htmlAircraft _ (Aircraft t r e) =
-  span_ [] $
-    do  span_ [] (fromString t)
+  span_ [class_ "aircraft"] $
+    do  span_ [class_ "aircrafttype"] (fromString t)
         " "
-        span_ [] (fromString r)
+        span_ [class_ "aircraftregistration"] (fromString r)
         " "
-        span_ [] (fromString (strEngine e))
+        span_ [class_ "aircraftengine"] (fromString (strEngine e))
 
 htmlRatingDay ::
   Maybe Day
@@ -2584,34 +2585,31 @@ htmlFlightPoint ::
   -> FlightPoint
   -> Html ()
 htmlFlightPoint _ (FlightPoint p _ _) =
-  span_ [] $
+  span_ [class_ "flightpoint"] $
     fromString p
 
 htmlFlightPath ::
   AircraftFlight
   -> FlightPath
   -> Html ()
-htmlFlightPath fl (FlightPath a x b) =
-  span_ [] $
-    do  htmlFlightPoint fl a
-        mapM_ (htmlFlightPoint fl) x
-        htmlFlightPoint fl b
-
+htmlFlightPath fl p =
+  span_ [class_ "flightpath"] $
+    fold (intersperse (toHtmlRaw (" &mdash; " :: Text.Text)) (htmlFlightPoint fl <$> flightPathList p))
+    
 htmlCommand ::
   AircraftFlight
   -> Command
   -> Html ()
 htmlCommand _ InCommand =
-  div_ [] $
-    span_ [] "In-Command"
+  span_ [class_ "command incommand"] "In-Command"
 htmlCommand _ (ICUS a) =
-  div_ [] $ 
-    do  span_ [] "In-Command Under-Instruction"
-        htmlAviatorShort a
+  do  span_ [class_ "command incommandunderinstruction"] "In-Command Under-Instruction"
+      span_ [class_ "commandphrase"] $ " by "
+      span_ [class_ "commandaviator"] $ htmlAviatorShort a
 htmlCommand _ (Dual a) =
-  div_ [] $
-    do  span_ [] "Dual Under-Instruction"
-        htmlAviatorShort a
+  do  span_ [class_ "command dualunderinstruction"] "Dual Under-Instruction"
+      span_ [class_ "commandphrase"] $ " by "
+      span_ [class_ "commandaviator"] $ htmlAviatorShort a
 
 strTimeAmount ::
   TimeAmount
@@ -2643,24 +2641,48 @@ htmlAviators ::
 htmlAviators =
   mapM_ htmlAviator
 
+htmlAircraftFlightName ::
+  String
+  -> Html ()
+htmlAircraftFlightName n =
+  h3_ [class_ "aircraftflightname"] $
+          fromString n
+
 htmlAircraftFlight ::
   AircraftFlight
   -> Html ()
 htmlAircraftFlight fl@(AircraftFlight n a c (DayNight d m) p o i) =
-  div_ [] $
-    do  span_ [] $
-          fromString n        
-        div_ [] $
-          htmlAircraft fl a
-        div_ [] $
-          htmlCommand fl c
-        htmlTimeAmountZero d        
-        htmlTimeAmountZero m        
-        span_ [] $
-          htmlFlightPath fl p
-        span_ [] $
-          htmlAviators o
-        htmlTimeAmountZero i
+  div_ [class_ "aircraftflight"] $
+    do  htmlAircraftFlightName n
+        ul_ [] $
+          do  li_ [] $
+                do  span_ [class_ "key"] "Aircraft: "
+                    span_ [class_ "value"] .
+                     htmlAircraft fl $ a
+              li_ [] $
+                do  span_ [class_ "key"] "Command: "
+                    span_ [class_ "value"] .
+                     htmlCommand fl $ c
+              li_ [] $
+                do  span_ [class_ "key"] "Amount (day): "
+                    span_ [class_ "value"] .
+                      htmlTimeAmount $ d
+              li_ [] $
+                do  span_ [class_ "key"] "Amount (night): "
+                    span_ [class_ "value"] .
+                      htmlTimeAmount $ m
+              li_ [] $
+                do  span_ [class_ "key"] "Amount (instrument): "
+                    span_ [class_ "value"] .
+                      htmlTimeAmount $ i
+              li_ [] $
+                do  span_ [class_ "key"] "Flight Path: "
+                    span_ [class_ "value"] .
+                      htmlFlightPath fl $ p
+              when (not . null $ o) . li_ [] $
+                do  span_ [class_ "key"] "Other Crew: "
+                    span_ [class_ "value"] .
+                      htmlAviators $ o
 
 htmlTimeOfDayTime ::
   Maybe TimeOfDay
@@ -2731,14 +2753,14 @@ htmlBriefingName ::
   String
   -> Html ()
 htmlBriefingName n =
-  h3_ [] $ 
+  h3_ [class_ "briefingname"] $ 
     fromString n
 
 htmlBriefing ::
   Briefing
   -> Html ()
 htmlBriefing (Briefing n l t a m) =
-  div_ [] $
+  div_ [class_ "briefing"] $
     do  htmlBriefingName n
         ul_ [] $
           do  li_ [] $
@@ -2929,6 +2951,12 @@ sspan_ ::
   -> Html ()
 sspan_ c =
   span_ c . fromString
+
+flightPathList ::
+  FlightPath
+  -> [FlightPoint]
+flightPathList (FlightPath s x e) =
+  s : x ++ [e]
 
 ----
 
