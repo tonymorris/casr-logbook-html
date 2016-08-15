@@ -2089,13 +2089,13 @@ logbook1007036 =
     [
       BriefingEntry preflightBriefing preflightBriefingMeta
     , AircraftFlightEntry effectofcontrols effectofcontrolsMeta
-    {-
     , AircraftFlightEntry straightandlevel straightandlevelMeta
     , BriefingEntry straightandlevelBriefing straightandlevelBriefingMeta
     , BriefingEntry effectofcontrolsBriefing effectofcontrolsBriefingMeta
     , AircraftFlightEntry climbinganddescending climbinganddescendingMeta
     , BriefingEntry climbinganddescendingBriefing climbinganddescendingBriefingMeta
     , AircraftFlightEntry turning turningMeta
+    {-}
     , BriefingEntry stallingBriefing1 stallingBriefing1Meta
     , AircraftFlightEntry stalling1 stalling1Meta
     , BriefingEntry stallingBriefing2 stallingBriefing2Meta
@@ -2628,12 +2628,20 @@ htmlTimeAmount t =
 htmlTimeAmountZero ::
   TimeAmount
   -> Html ()
-htmlTimeAmountZero z =
+htmlTimeAmountZero =
+  htmlTimeAmountZeroWith id
+
+htmlTimeAmountZeroWith :: 
+  Monoid a =>
+  (Html () -> a)
+  -> TimeAmount
+  -> a
+htmlTimeAmountZeroWith f z =
   if z == zerotimeamount
     then
       mempty
     else
-      htmlTimeAmount z
+      f (htmlTimeAmount z)
 
 htmlAviators ::
   [Aviator]
@@ -2663,18 +2671,18 @@ htmlAircraftFlight fl@(AircraftFlight n a c (DayNight d m) p o i) =
                 do  span_ [class_ "key"] "Command: "
                     span_ [class_ "value"] .
                      htmlCommand fl $ c
-              li_ [] $
+              htmlTimeAmountZeroWith (\t ->
+                li_ [] $
                 do  span_ [class_ "key"] "Amount (day): "
-                    span_ [class_ "value"] .
-                      htmlTimeAmount $ d
-              li_ [] $
+                    span_ [class_ "value"] t) d
+              htmlTimeAmountZeroWith (\t ->
+                li_ [] $
                 do  span_ [class_ "key"] "Amount (night): "
-                    span_ [class_ "value"] .
-                      htmlTimeAmount $ m
-              li_ [] $
+                    span_ [class_ "value"] t) m
+              htmlTimeAmountZeroWith (\t ->
+                li_ [] $
                 do  span_ [class_ "key"] "Amount (instrument): "
-                    span_ [class_ "value"] .
-                      htmlTimeAmount $ i
+                    span_ [class_ "value"] t) i
               li_ [] $
                 do  span_ [class_ "key"] "Flight Path: "
                     span_ [class_ "value"] .
