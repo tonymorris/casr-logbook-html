@@ -2404,7 +2404,7 @@ htmlTrackLogs ::
   -> Html ()
 htmlTrackLogs fl x =
   whenEmpty (\q -> div_ [class_ "tracklogs"] $
-    do  span_ [class_ "tracklogsheader"] "Expenses"
+    do  span_ [class_ "tracklogsheader"] "Track Logs"
         ul_ [] $
           mapM_ (li_ [class_ "tracklog"] . htmlTrackLog fl) q) x
 
