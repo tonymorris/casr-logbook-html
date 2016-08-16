@@ -58,6 +58,18 @@ a {
   font-weight: bold;
 }
 
+.imagesheader {
+  font-weight: bold;
+}
+
+.videosheader {
+  font-weight: bold;
+}
+
+.aircraftflightexpensesheader {
+  font-weight: bold;
+}
+
 .commandaviator {
   font-style: italic;
 }

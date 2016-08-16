@@ -2047,12 +2047,12 @@ basicinstrumentflightMeta =
   AircraftFlightMeta
     [
       TrackLog
-        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/20160714-vh-vvo.gpx"
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/20160714-vh-afr.gpx"
         Gpx
         (Just "Samsung Galaxy S4")
         Nothing
     , TrackLog
-        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20160714-vh-vvo.png"
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20160714-vh-afr.png"
         (ImageTrackLog Png)
         (Just "gpsvisualizer.com")
         Nothing
@@ -2095,7 +2095,6 @@ logbook1007036 =
     , AircraftFlightEntry climbinganddescending climbinganddescendingMeta
     , BriefingEntry climbinganddescendingBriefing climbinganddescendingBriefingMeta
     , AircraftFlightEntry turning turningMeta
-    {-}
     , BriefingEntry stallingBriefing1 stallingBriefing1Meta
     , AircraftFlightEntry stalling1 stalling1Meta
     , BriefingEntry stallingBriefing2 stallingBriefing2Meta
@@ -2142,7 +2141,6 @@ logbook1007036 =
     , SimulatorFlightEntry basicinstrumentflightsim basicinstrumentflightsimMeta
     , AircraftFlightEntry basicinstrumentflight basicinstrumentflightMeta
     , BriefingEntry basicinstrumentflightBriefing2 basicinstrumentflightBriefing2Meta
-    -}
     ]
 
 ----
@@ -2211,31 +2209,27 @@ htmlAircraftUsageExpense ::
   -> Html ()
 htmlAircraftUsageExpense fl (AircraftUsageExpense perhour name) =
   let z = totalDayNight (fl ^. daynight)
-  in  div_ [class_ "AircraftUsageExpense"] .
-        ul_ $
-          do  when (not . null $ name) . li_ $
-                do  span_ [class_ "AircraftUsageExpense_name_key"] "Aircraft usage: "
-                    span_ [class_ "AircraftUsageExpense_name_value"] . fromString $ name
-              li_ $
-                do  span_ [class_ "AircraftUsageExpense_perhour_key"] "Per hour: "
-                    span_ [class_ "AircraftUsageExpense_perhour_value"] . fromString . ('$':) . showCentsAsDollars $ perhour
-              li_ $
-                do  span_ [class_ "AircraftUsageExpense_expense_key"] "Expense: "
-                    span_ [class_ "AircraftUsageExpense_expense"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
+  in  span_ [class_ "aircraftusageexpense"] $
+        do  span_ [class_ "aircraftusageexpensecost"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
+            span_ [class_ "aircraftusageexpensephrase"] " at "
+            span_ [class_ "aircraftusageexpenseperhour"] . fromString . ('$':) . showCentsAsDollars $ perhour
+            span_ [class_ "aircraftusageexpensephrase"] " per hour"
+            when (not . null $ name) . span_ [class_ "aircraftusageexpensename"] $
+              do  " ("
+                  fromString name
+                  ")"
 
 htmlAircraftLandingExpense ::
   AircraftFlight
   -> AircraftLandingExpense
   -> Html ()
 htmlAircraftLandingExpense _ (AircraftLandingExpense amount name) =
-  div_ [class_ "AircraftLandingExpense"] .
-    ul_ $
-      do  when (not . null $ name) . li_ $
-            do  span_ [class_ "AircraftLandingExpense_name_key"] "Aircraft landing: "
-                span_ [class_ "AircraftLandingExpense_name_value"] . fromString $ name
-          li_ $
-            do  span_ [class_ "AircraftLandingExpense_expense_key"] "Expense: "
-                span_ [class_ "AircraftLandingExpense_expense_value"] . fromString . ('$':) . showCentsAsDollars $ amount
+  span_ [class_ "aircraftlandingexpense"] $
+    do  span_ [class_ "aircraftlandingexpensecost"] . fromString . ('$':) . showThousandCentsAsDollars $ (amount * 10)
+        when (not . null $ name) . span_ [class_ "aircraftlandingexpensename"] $
+          do  " ("
+              fromString name
+              ")"
 
 htmlAircraftFlightExpense ::
   AircraftFlight
@@ -2299,7 +2293,7 @@ htmlVisualisation ::
   -> Visualisation
   -> Html ()
 htmlVisualisation _ (Doarama i _ n) =
-  let n' = fromMaybe "Visualisation" n
+  let n' = fromMaybe "doarama.com" n
   in  do  a_ [href_ ("http://doarama.com/view/" <> Text.pack i)] $ 
             span_ [class_ "Visualisation_name"] (fromString n')
           -- p_ (iframe_ [src_ ("http://www.doarama.com/embed?k=" <> Text.pack e), width_ "560", height_ "315", termWith -- "allowfullscreen" [] "allowfullscreen"] "")
@@ -2392,11 +2386,8 @@ htmlVideo ::
   -> Html ()
 htmlVideo fl (Video u t s n) =
   let n' = fromMaybe ("Video (" ++ strVideoType t ++ ")") n
-  in  do  div_ . a_ [href_ (fromString (linkVideoType t u))] $
-            span_ [] $
-              do  fromString n'
-                  htmlVideoSource fl s
-          p_ $ iframe_ [width_ "560", height_ "315", termWith "allowfullscreen" [] "allowfullscreen", src_ (fromString (iframeVideoType t u))] ""
+  in  do  a_ [href_ (fromString (linkVideoType t u))] (fromString n')
+          htmlVideoSource fl s
 
 htmlTrackLogs ::
   AircraftFlight
@@ -2423,30 +2414,30 @@ htmlImages ::
   -> [Image]
   -> Html ()
 htmlImages fl x =
-  do span_ [] $
-       "Image"
-     ul_ .
-       mapM_ (li_ [] . htmlImage fl) $ x
+  whenEmpty (\q -> div_ [class_ "tracklogs"] $
+    do  span_ [class_ "imagesheader"] "Images"
+        div_ [style_ "text-align: justify"] $ 
+          mapM_ (htmlImage fl) q) x
 
 htmlVideos ::
   AircraftFlight
   -> [Video]
   -> Html ()
 htmlVideos fl x =
-  do span_ [] $
-       "Video"
-     ul_ .
-       mapM_ (li_ [] . htmlVideo fl) $ x
+  whenEmpty (\q -> div_ [class_ "videos"] $
+    do  span_ [class_ "videosheader"] "Videos"
+        ul_ [] $
+          mapM_ (li_ [class_ "video"] . htmlVideo fl) q) x
 
 htmlAircraftFlightExpenses ::
   AircraftFlight
   -> [AircraftFlightExpense]
   -> Html ()
 htmlAircraftFlightExpenses fl x =
-  do span_ [] $
-       "Aircraft Flight Expense"
-     ul_ .
-       mapM_ (li_ [] . htmlAircraftFlightExpense fl) $ x
+  whenEmpty (\q -> div_ [class_ "aircraftflightexpenses"] $
+    do  span_ [class_ "aircraftflightexpensesheader"] "Aircraft Flight Expenses"
+        ul_ [] $
+          mapM_ (li_ [class_ "aircraftflightexpense"] . htmlAircraftFlightExpense fl) q) x
 
 htmlAircraftFlightMeta ::
   AircraftFlight
