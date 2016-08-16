@@ -2403,20 +2403,20 @@ htmlTrackLogs ::
   -> [TrackLog]
   -> Html ()
 htmlTrackLogs fl x =
-  do span_ [] $
-       "Track Log"
-     ul_ .
-       mapM_ (li_ [] . htmlTrackLog fl) $ x
+  whenEmpty (\q -> div_ [class_ "tracklogs"] $
+    do  span_ [class_ "tracklogsheader"] "Expenses"
+        ul_ [] $
+          mapM_ (li_ [class_ "tracklog"] . htmlTrackLog fl) q) x
 
 htmlVisualisations ::
   AircraftFlight
   -> [Visualisation]
   -> Html ()
 htmlVisualisations fl x =
-  do span_ [] $
-       "Visualisation"
-     ul_ .
-       mapM_ (li_ [] . htmlVisualisation fl) $ x
+  whenEmpty (\q -> div_ [class_ "visualisations"] $
+    do  span_ [class_ "visualisationsheader"] "Visualisations"
+        ul_ [] $
+          mapM_ (li_ [class_ "visualisation"] . htmlVisualisation fl) q) x
 
 htmlImages ::
   AircraftFlight
@@ -2882,10 +2882,10 @@ htmlBriefingMeta ::
   -> BriefingMeta
   -> Html ()
 htmlBriefingMeta b (BriefingMeta s) =
-  div_ [class_ "briefingmeta"] $
+  whenEmpty (\q -> div_ [class_ "briefingmeta"] $
     do  span_ [class_ "briefingmetaheader"] "Expenses"
         ul_ [] $
-          mapM_ (li_ [] . htmlBriefingExpense b) s
+          mapM_ (li_ [class_ "expense"] . htmlBriefingExpense b) q) s
 
 htmlEntries ::
   Entries AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
@@ -2965,6 +2965,16 @@ flightPathList ::
   -> [FlightPoint]
 flightPathList (FlightPath s x e) =
   s : x ++ [e]
+
+whenEmpty ::
+  Monoid a =>
+  ([t] -> a)
+  -> [t]
+  -> a
+whenEmpty _ [] =
+  mempty
+whenEmpty f x =
+  f x
 
 ----
 

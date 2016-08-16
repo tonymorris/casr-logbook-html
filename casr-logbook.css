@@ -50,6 +50,14 @@ a {
   font-style: italic;
 }
 
+.tracklogsheader {
+  font-weight: bold;
+}
+
+.visualisationsheader {
+  font-weight: bold;
+}
+
 .commandaviator {
   font-style: italic;
 }
