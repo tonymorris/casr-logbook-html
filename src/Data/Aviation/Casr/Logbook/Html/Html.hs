@@ -2351,7 +2351,7 @@ rplexamMeta =
 rpltestpreparation ::
   Briefing
 rpltestpreparation =
-  Briefing "RPL test preparation" flightone (dayonly (fromGregorian 2016 8 16)) davidschofield (TimeAmount 2 x0)
+  Briefing "RPLA flight test preparation" flightone (dayonly (fromGregorian 2016 8 16)) davidschofield (TimeAmount 2 x0)
 
 rpltestpreparationMeta ::
   BriefingMeta
