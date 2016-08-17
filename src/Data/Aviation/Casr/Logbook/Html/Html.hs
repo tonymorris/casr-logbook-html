@@ -2941,6 +2941,10 @@ htmlAircraftFlight fl@(AircraftFlight n a c (DayNight d m) p o i) =
     do  htmlAircraftFlightName n
         ul_ [] $
           do  li_ [] $
+                do  span_ [class_ "key"] "Time: "
+                    span_ [class_ "value"] .
+                     htmlFlightPathTime $ p
+              li_ [] $
                 do  span_ [class_ "key"] "Aircraft: "
                     span_ [class_ "value"] .
                      htmlAircraft fl $ a
@@ -2980,9 +2984,23 @@ htmlTime ::
   Time
   -> Html ()
 htmlTime (Time t d) =
-  span_ [] $ 
+  span_ [class_ "time"] $ 
     do  fromString (show t)
         htmlTimeOfDayTime d
+
+htmlFlightPathTime ::
+  FlightPath
+  -> Html()
+htmlFlightPathTime p =
+  let s = p ^. flightStart . landingTime
+      e = p ^. flightEnd . landingTime
+  in  if s == e
+        then
+          htmlTime s
+        else
+          do  htmlTime s
+              toHtmlRaw (" &mdash; " :: Text.Text)
+              htmlTime e
 
 htmlSimulatorFlightName ::
   String
