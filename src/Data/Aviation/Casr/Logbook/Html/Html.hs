@@ -2736,6 +2736,8 @@ htmlAircraftFlightMeta fl (AircraftFlightMeta tls vls ims vds exs) =
         htmlVideos fl vds
         htmlAircraftFlightExpenses fl exs
 
+----
+
 strEngine ::
   Engine
   -> String
@@ -3025,7 +3027,7 @@ htmlSimulatorFlight (SimulatorFlight n t y o i) =
                     span_ [class_ "value"] (fromString y)
               when (not . null $ o) . li_ [] $
                 do  span_ [class_ "key"] "Other Crew: "
-                    span_ [class_ "value"] .
+                    div_ [class_ "value"] .
                       htmlAviators $ o
               li_ [] $
                 do  span_ [class_ "key"] "Amount: "
