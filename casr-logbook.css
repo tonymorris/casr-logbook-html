@@ -70,6 +70,30 @@ a {
   font-weight: bold;
 }
 
+.aircraftusageexpensename {
+  font-size: xx-small;
+  font-style: italic;
+}
+
+.aircraftlandingexpensename {
+  font-size: xx-small;
+  font-style: italic;
+}
+
+.simulatorflightexpensename {
+  font-size: xx-small;
+  font-style: italic;
+}
+
+.examexpensename {
+  font-size: xx-small;
+  font-style: italic;
+}
+
+.exammetaheader {
+  font-weight: bold;
+}
+
 .commandaviator {
   font-style: italic;
 }

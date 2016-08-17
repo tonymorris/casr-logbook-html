@@ -21,6 +21,7 @@ import Control.Monad
 import Data.Maybe
 import Data.Monoid hiding (Dual)
 import qualified Data.Text as Text
+import Text.Printf
 
 data AircraftUsageExpense =
   AircraftUsageExpense {
@@ -240,6 +241,13 @@ damienboyer =
     "Boyer"
     "Damien"
 
+ryanmeyles ::
+  Aviator
+ryanmeyles =
+  aviatorwithname
+    "Meyles"
+    "Ryan"
+
 kenosbourne ::
   Aviator
 kenosbourne =
@@ -289,6 +297,14 @@ flightone =
     "Flight One"
     (-27.566768)
     153.014955
+
+aslExamArcherfield ::
+  Location
+aslExamArcherfield =
+  Location
+    "Assessment Skills Limited (ASL) -- Archerfield"
+    (-27.570284)
+    153.014238
 
 flightoneC162AircraftUsageExpense ::
   String
@@ -2081,6 +2097,268 @@ basicinstrumentflightBriefing2Meta =
   BriefingMeta
     [BriefingExpense 7700 "Briefing - Basic"]
 
+shortfieldtakeofflanding ::
+  AircraftFlight
+shortfieldtakeofflanding =
+  noif_dualonlyflight
+    "Short field take-off and landing"
+    vhafr
+    ryanmeyles
+    (day 1 x1)
+    (directcircuit (pointatdate "YBAF" (fromGregorian 2016 7 22)))
+
+shortfieldtakeofflandingMeta ::
+  AircraftFlightMeta
+shortfieldtakeofflandingMeta =
+  AircraftFlightMeta
+    [
+      TrackLog
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/20160722-vh-afr.gpx"
+        Gpx
+        (Just "Samsung Galaxy S4")
+        Nothing
+    , TrackLog
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20160722-vh-afr.png"
+        (ImageTrackLog Png)
+        (Just "gpsvisualizer.com")
+        Nothing
+    ]
+    [
+      Doarama
+        "854963"
+        "EpoX79k"
+        Nothing
+    ]
+    []
+    [
+      Video
+        "9o8OM_f5Uxg"
+        YouTube
+        Nothing
+        (Just "Cabin live stream")
+    ]
+    [
+      vhafrUnderInstruction
+    , vhafrLanding
+    ]
+
+precautionarysearchandlanding ::
+  AircraftFlight
+precautionarysearchandlanding =
+  noif_dualonlyflight
+    "Precautionary search and landing"
+    vhvvo
+    ryanmeyles
+    (day 1 x1)
+    (directcircuit (pointatdate "YBAF" (fromGregorian 2016 7 29)))
+
+precautionarysearchandlandingMeta ::
+  AircraftFlightMeta
+precautionarysearchandlandingMeta =
+  AircraftFlightMeta
+    [
+      TrackLog
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/20160729-vh-vvo.gpx"
+        Gpx
+        (Just "Samsung Galaxy S4")
+        Nothing
+    , TrackLog
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20160729-vh-vvo.png"
+        (ImageTrackLog Png)
+        (Just "gpsvisualizer.com")
+        Nothing
+    ]
+    [
+      Doarama
+        "865050"
+        "6bWZjWe"
+        Nothing
+    ]
+    []
+    [
+      Video
+        "lBq9InluAPo"
+        YouTube
+        Nothing
+        (Just "Cabin live stream")
+    ]
+    [
+      vhvvoUnderInstruction
+    , vhvvoLanding
+    ]
+
+shortfieldtakeofflandingBriefing ::
+  Briefing
+shortfieldtakeofflandingBriefing =
+  Briefing "Short field take-off and landing" flightone (dayonly (fromGregorian 2016 7 22)) ryanmeyles (parttimeamount x5)
+
+shortfieldtakeofflandingBriefingMeta ::
+  BriefingMeta
+shortfieldtakeofflandingBriefingMeta =
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Basic"]
+
+precautionarysearchandlandingBriefing ::
+  Briefing
+precautionarysearchandlandingBriefing =
+  Briefing "Precautionary search and landing" flightone (dayonly (fromGregorian 2016 7 29)) ryanmeyles (parttimeamount x5)
+
+precautionarysearchandlandingBriefingMeta ::
+  BriefingMeta
+precautionarysearchandlandingBriefingMeta =
+  BriefingMeta
+    [BriefingExpense 7700 "Briefing - Basic PSL"]
+
+generalrevision ::
+  AircraftFlight
+generalrevision =
+  dualonlyflight
+    "General Revision"
+    vhafr
+    ryanmeyles
+    (day 1 x1)
+    (directcircuit (pointatdate "YBAF" (fromGregorian 2016 8 5)))
+    (parttimeamount x5)
+
+generalrevisionMeta ::
+  AircraftFlightMeta
+generalrevisionMeta =
+  AircraftFlightMeta
+    [
+      TrackLog
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/20160805-vh-afr.gpx"
+        Gpx
+        (Just "Samsung Galaxy S4")
+        Nothing
+    , TrackLog
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20160805-vh-afr.png"
+        (ImageTrackLog Png)
+        (Just "gpsvisualizer.com")
+        Nothing
+    ]
+    [
+      Doarama
+        "876462"
+        "kLZ8Kp6"
+        Nothing
+    ]
+    []
+    []
+    [
+      vhafrUnderInstruction
+    , vhafrLanding
+    ]
+
+generalrevisionBriefing ::
+  Briefing
+generalrevisionBriefing =
+  Briefing "Precautionary search and landing" flightone (dayonly (fromGregorian 2016 8 5)) ryanmeyles (parttimeamount x1)
+
+generalrevisionBriefingMeta ::
+  BriefingMeta
+generalrevisionBriefingMeta =
+  BriefingMeta
+    [BriefingExpense 7700 "Approach brief"]
+
+preexamBriefing ::
+  Briefing
+preexamBriefing =
+  Briefing "Pre-exam briefing" flightone (dayonly (fromGregorian 2016 8 5)) davidschofield (parttimeamount x5)
+
+preexamBriefingMeta ::
+  BriefingMeta
+preexamBriefingMeta =
+  BriefingMeta
+    [BriefingExpense 7700 "brief pressure & density altitude weight & balance & performance"]
+
+areasoloconsolidation ::
+  AircraftFlight
+areasoloconsolidation =
+  noif_commandonlyflight
+    "Area Solo Consolidation"
+    vhvvo
+    (day 1 x2)
+    (directcircuit (pointatdate "YBAF" (fromGregorian 2016 8 9)))   
+
+areasoloconsolidationMeta ::
+  AircraftFlightMeta
+areasoloconsolidationMeta =
+  AircraftFlightMeta
+    [
+      TrackLog
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/20160809-vh-vvo.gpx"
+        Gpx
+        (Just "Samsung Galaxy S4")
+        Nothing
+    , TrackLog
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20160809-vh-vvo.png"
+        (ImageTrackLog Png)
+        (Just "gpsvisualizer.com")
+        Nothing
+    ]
+    [
+      Doarama
+        "882382"
+        "6jnWOa6"
+        Nothing
+    ]
+    []
+    [
+      Video
+        "zKu7-WoWyXo"
+        YouTube
+        Nothing
+        (Just "Cabin live stream 1")
+    , Video
+        "HMaIC3TJFXI"
+        YouTube
+        Nothing
+        (Just "Cabin live stream 2")
+    ]
+    [
+      vhvvoUnderInstruction
+    , vhvvoLanding
+    ]
+
+preexamBriefing2 ::
+  Briefing
+preexamBriefing2 =
+  Briefing "Pre-exam briefing 2" flightone (dayonly (fromGregorian 2016 8 11)) davidschofield (TimeAmount 1 x5)
+
+preexamBriefing2Meta ::
+  BriefingMeta
+preexamBriefing2Meta =
+  BriefingMeta
+    [BriefingExpense 7700 "RPL theory"]
+
+rplexam ::
+  Exam
+rplexam =
+  dayonlyexam
+    "RPLA: Recreational Pilot Licence (Aeroplane)"
+    aslExamArcherfield
+    (fromGregorian 2016 8 15)
+    davidschofield
+    79
+    100
+
+rplexamMeta ::
+  ExamMeta
+rplexamMeta =
+  ExamMeta
+    [ExamExpense 9695 "RPLA: Recreational Pilot Licence (Aeroplane)", ExamExpense 5500 "CASA delivery fee"]
+
+rpltestpreparation ::
+  Briefing
+rpltestpreparation =
+  Briefing "RPL test preparation" flightone (dayonly (fromGregorian 2016 8 16)) davidschofield (TimeAmount 2 x0)
+
+rpltestpreparationMeta ::
+  BriefingMeta
+rpltestpreparationMeta =
+  BriefingMeta
+    [BriefingExpense 7700 "RPL test theory Prep"]
+
 logbook1007036 ::
   Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
 logbook1007036 =
@@ -2141,6 +2419,17 @@ logbook1007036 =
     , SimulatorFlightEntry basicinstrumentflightsim basicinstrumentflightsimMeta
     , AircraftFlightEntry basicinstrumentflight basicinstrumentflightMeta
     , BriefingEntry basicinstrumentflightBriefing2 basicinstrumentflightBriefing2Meta
+    , AircraftFlightEntry shortfieldtakeofflanding shortfieldtakeofflandingMeta
+    , BriefingEntry shortfieldtakeofflandingBriefing shortfieldtakeofflandingBriefingMeta
+    , AircraftFlightEntry precautionarysearchandlanding precautionarysearchandlandingMeta
+    , BriefingEntry shortfieldtakeofflandingBriefing shortfieldtakeofflandingBriefingMeta
+    , AircraftFlightEntry generalrevision generalrevisionMeta
+    , BriefingEntry generalrevisionBriefing generalrevisionBriefingMeta
+    , BriefingEntry preexamBriefing preexamBriefingMeta
+    , AircraftFlightEntry areasoloconsolidation areasoloconsolidationMeta
+    , BriefingEntry preexamBriefing2 preexamBriefing2Meta
+    , ExamEntry rplexam rplexamMeta
+    , BriefingEntry rpltestpreparation rpltestpreparationMeta
     ]
 
 ----
@@ -2246,31 +2535,27 @@ htmlSimulatorFlightExpense ::
   -> Html ()
 htmlSimulatorFlightExpense sf (SimulatorFlightExpense perhour name) =
   let z = sf ^. instrumentsimulatorTimeAmount
-  in  div_ [class_ "SimulatorFlightExpense"] .
-        ul_ $
-          do  when (not . null $ name) . li_ $
-                do  span_ [class_ "SimulatorFlightExpense_name_key"] "Simulator flight: "
-                    span_ [class_ "SimulatorFlightExpense_name_value"] . fromString $ name
-              li_ $
-                do  span_ [class_ "SimulatorFlightExpense_perhour_key"] "Per hour: "
-                    span_ [class_ "SimulatorFlightExpense_perhour_value"] . fromString . ('$':) . showCentsAsDollars $ perhour
-              li_ $
-                do  span_ [class_ "SimulatorFlightExpense_expense_key"] "Expense: "
-                    span_ [class_ "SimulatorFlightExpenseSimulatorFlightExpense_expense"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
+  in  span_ [class_ "simulatorflightexpense"] $
+        do  span_ [class_ "simulatorflightcost"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
+            span_ [class_ "simulatorflightexpensephrase"] " at "
+            span_ [class_ "simulatorflightexpenseperhour"] . fromString . ('$':) . showCentsAsDollars $ perhour
+            span_ [class_ "simulatorflightexpensephrase"] " per hour"
+            when (not . null $ name) . span_ [class_ "simulatorflightexpensename"] $
+              do  " ("
+                  fromString name
+                  ")"
 
 htmlExamExpense ::
   Exam
   -> ExamExpense
   -> Html ()
 htmlExamExpense _ (ExamExpense amount name) =
-  div_ [class_ "ExamExpense"] .
-    ul_ $
-      do  when (not . null $ name) . li_ $
-            do  span_ [class_ "ExamExpense_name_key"] "Exam: "
-                span_ [class_ "ExamExpense_name_value"] . fromString $ name
-          li_ $
-            do  span_ [class_ "ExamExpense_expense_key"] "Expense: "
-                span_ [class_ "ExamExpense_expense_value"] . fromString . ('$':) . showCentsAsDollars $ amount
+  span_ [class_ "examexpense"] $
+    do  span_ [class_ "examexpensecost"] . fromString . ('$':) . showThousandCentsAsDollars $ (amount * 10)
+        when (not . null $ name) . span_ [class_ "examexpensename"] $
+          do  " ("
+              fromString name
+              ")"
 
 htmlBriefingExpense ::
   Briefing
@@ -2638,7 +2923,8 @@ htmlAviators ::
   [Aviator]
   -> Html ()
 htmlAviators =
-  mapM_ htmlAviator
+  ul_ [] .
+    mapM_ (li_ [] . htmlAviatorShort)
 
 htmlAircraftFlightName ::
   String
@@ -2698,18 +2984,36 @@ htmlTime (Time t d) =
     do  fromString (show t)
         htmlTimeOfDayTime d
 
+htmlSimulatorFlightName ::
+  String
+  -> Html ()
+htmlSimulatorFlightName n =
+  h3_ [class_ "simulatorflightname"] $
+          fromString n
+
 htmlSimulatorFlight ::
   SimulatorFlight
   -> Html ()
 htmlSimulatorFlight (SimulatorFlight n t y o i) =
-  div_ [] $
-    do  span_ [] (fromString n)
-        htmlTime t
-        span_ [] (fromString y)
-        div_ [] $
-          htmlAviators o
-        htmlTimeAmountZero i
-
+  div_ [class_ "simulatorflight"] $
+    do  htmlSimulatorFlightName n
+        ul_ [] $
+          do  li_ [] $
+                do  span_ [class_ "key"] "Time: "
+                    span_ [class_ "value"] .
+                     htmlTime $ t
+              li_ [] $
+                do  span_ [class_ "key"] "Type: "
+                    span_ [class_ "value"] (fromString y)
+              when (not . null $ o) . li_ [] $
+                do  span_ [class_ "key"] "Other Crew: "
+                    span_ [class_ "value"] .
+                      htmlAviators $ o
+              li_ [] $
+                do  span_ [class_ "key"] "Amount: "
+                    span_ [class_ "value"] .
+                     htmlTimeAmount $ i
+  
 htmlLocation ::
   Location
   -> Html ()
@@ -2736,17 +3040,42 @@ htmlExamResult x y =
       "/"
       fromString (show y)
 
+htmlExamName ::
+  String
+  -> Html ()
+htmlExamName n =
+  h3_ [class_ "examname"] $ 
+    fromString n
+
 htmlExam ::
   Exam
   -> Html ()
 htmlExam (Exam n l t a r m) =
-  div_ [] $
-    do  span_ [] $ 
-          fromString n
-        htmlLocation l
-        htmlTime t
-        htmlAviatorShort a
-        htmlExamResult r m
+  let r' = do  span_ [class_ "examresult"] . fromString . show $ r
+               span_ [class_ "examresultoutof"] "/"
+               span_ [class_ "examresultmaximum"] . fromString . show $ m
+               " ("
+               span_ [class_ "examresultpercentage"] . fromString . printf "%.2f" $ (100 * fromIntegral r / fromIntegral m :: Double)
+               span_ [class_ "examresultpercentsign"] "%"
+               ")"
+  in  div_ [class_ "exam"] $
+        do  htmlExamName n
+            ul_ [] $
+              do  li_ [] $
+                    do  span_ [class_ "key"] "Time: "
+                        span_ [class_ "value"] .
+                          htmlTime $ t
+                  li_ [] $
+                    do  span_ [class_ "key"] "Location: "
+                        span_ [class_ "value"] .
+                          htmlLocation $ l
+                  li_ [] $
+                    do  span_ [class_ "key"] "Delegate: "
+                        span_ [class_ "value"] .
+                          htmlAviatorShort $ a
+                  li_ [] $
+                    do  span_ [class_ "key"] "Result: "
+                        span_ [class_ "value"] r'
 
 htmlBriefingName ::
   String
@@ -2859,14 +3188,20 @@ htmlSimulatorFlightMeta ::
   -> SimulatorFlightMeta
   -> Html ()
 htmlSimulatorFlightMeta fl (SimulatorFlightMeta s) =
-  mapM_ (htmlSimulatorFlightExpense fl) s
+  whenEmpty (\q -> div_ [class_ "simulatormeta"] $
+    do  span_ [class_ "simulatorheader"] "Expenses"
+        ul_ [] $
+          mapM_ (li_ [class_ "expense"] . htmlSimulatorFlightExpense fl) q) s  
 
 htmlExamMeta ::
   Exam
   -> ExamMeta
   -> Html ()
 htmlExamMeta e (ExamMeta s) =
-  mapM_ (htmlExamExpense e) s
+  whenEmpty (\q -> div_ [class_ "exammeta"] $
+    do  span_ [class_ "exammetaheader"] "Expenses"
+        ul_ [] $
+          mapM_ (li_ [class_ "expense"] . htmlExamExpense e) q) s
 
 htmlBriefingMeta ::
   Briefing
