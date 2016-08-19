@@ -199,7 +199,7 @@ newtype BriefingMeta =
 makeClassy ''BriefingMeta
 makeWrapped ''BriefingMeta
 
-----
+---- My logbook
 
 tonymorris ::
   Aviator
@@ -2480,65 +2480,7 @@ logbook1007036 =
     , AircraftFlightEntry rplrecommendation rplrecommendationMeta
     ]
 
-----
-
--- todo move to casr-logbook
-
-totalDayNight ::
-  DayNight
-  -> TimeAmount
-totalDayNight (DayNight d n) =
-  d `mappend` n
-
-showCentsAsDollars ::
-  Int
-  -> String
-showCentsAsDollars n =
-  let pos ::
-        String
-        -> String
-      pos [] =
-        []
-      pos [x] =
-        "0.0" ++ [x]
-      pos [x, y] =
-        "0." ++ [y, x]
-      pos (x:y:z) =
-        reverse z ++ "." ++ [y, x]
-  in  (if n < 0 then ('-':) else id) . pos . reverse . show . abs $ n
-
-showThousandCentsAsDollars ::
-  Int
-  -> String
-showThousandCentsAsDollars n =
-  let pos ::
-        String
-        -> String
-      pos [] =
-        []
-      pos [x] =
-        [x] ++ "0.0"
-      pos [x, y] =
-        [x, y] ++ ".0"
-      pos [x, y, z] =
-        [x, y, z] ++ ".0"
-      pos (x:y:z:r) =
-        [x, y, z] ++ "." ++ r
-      drop0 [] =
-        []
-      drop0 ('0':r) =
-        r
-      drop0 w =
-        w
-  in  (if n < 0 then ('-':) else id) . reverse . drop0 . pos . reverse . show . abs $ n
-
-timeAmountBy10 ::
-  TimeAmount
-  -> Int
-timeAmountBy10 (TimeAmount a b) =
-  a * 10 + digit # b
-
-----
+---- Html (meta)
 
 htmlAircraftUsageExpense ::
   AircraftFlight
@@ -2784,7 +2726,37 @@ htmlAircraftFlightMeta fl (AircraftFlightMeta tls vls ims vds exs) =
         htmlVideos fl vds
         htmlAircraftFlightExpenses fl exs
 
-----
+htmlSimulatorFlightMeta ::
+  SimulatorFlight
+  -> SimulatorFlightMeta
+  -> Html ()
+htmlSimulatorFlightMeta fl (SimulatorFlightMeta s) =
+  whenEmpty (\q -> div_ [class_ "simulatormeta"] $
+    do  span_ [class_ "simulatorheader"] "Expenses"
+        ul_ [] $
+          mapM_ (li_ [class_ "expense"] . htmlSimulatorFlightExpense fl) q) s  
+
+htmlExamMeta ::
+  Exam
+  -> ExamMeta
+  -> Html ()
+htmlExamMeta e (ExamMeta s) =
+  whenEmpty (\q -> div_ [class_ "exammeta"] $
+    do  span_ [class_ "exammetaheader"] "Expenses"
+        ul_ [] $
+          mapM_ (li_ [class_ "expense"] . htmlExamExpense e) q) s
+
+htmlBriefingMeta ::
+  Briefing
+  -> BriefingMeta
+  -> Html ()
+htmlBriefingMeta b (BriefingMeta s) =
+  whenEmpty (\q -> div_ [class_ "briefingmeta"] $
+    do  span_ [class_ "briefingmetaheader"] "Expenses"
+        ul_ [] $
+          mapM_ (li_ [class_ "expense"] . htmlBriefingExpense b) q) s
+
+---- Html (no meta)
 
 strEngine ::
   Engine
@@ -3228,36 +3200,6 @@ htmlEntryTag (BriefingEntry e _) =
                           ]
   in  a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "BRF"
 
-htmlSimulatorFlightMeta ::
-  SimulatorFlight
-  -> SimulatorFlightMeta
-  -> Html ()
-htmlSimulatorFlightMeta fl (SimulatorFlightMeta s) =
-  whenEmpty (\q -> div_ [class_ "simulatormeta"] $
-    do  span_ [class_ "simulatorheader"] "Expenses"
-        ul_ [] $
-          mapM_ (li_ [class_ "expense"] . htmlSimulatorFlightExpense fl) q) s  
-
-htmlExamMeta ::
-  Exam
-  -> ExamMeta
-  -> Html ()
-htmlExamMeta e (ExamMeta s) =
-  whenEmpty (\q -> div_ [class_ "exammeta"] $
-    do  span_ [class_ "exammetaheader"] "Expenses"
-        ul_ [] $
-          mapM_ (li_ [class_ "expense"] . htmlExamExpense e) q) s
-
-htmlBriefingMeta ::
-  Briefing
-  -> BriefingMeta
-  -> Html ()
-htmlBriefingMeta b (BriefingMeta s) =
-  whenEmpty (\q -> div_ [class_ "briefingmeta"] $
-    do  span_ [class_ "briefingmetaheader"] "Expenses"
-        ul_ [] $
-          mapM_ (li_ [class_ "expense"] . htmlBriefingExpense b) q) s
-
 htmlEntry :: 
   (AircraftFlight -> a -> Html x)
   -> (SimulatorFlight -> b -> Html x)
@@ -3305,8 +3247,6 @@ htmlLogbook ::
 htmlLogbook aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' (Logbook a es) =
   do  htmlAviator a
       htmlEntries aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' es
-
-----
 
 htmlTitleAviator ::
   Aviator
@@ -3356,19 +3296,63 @@ htmlLogbookHeader _ =
               span_ [class_ "austlii"] $
                 a_ [href_ "http://www.austlii.edu.au/au/legis/cth/consol_reg/casr1998333/s61.345.html"] "austlii.edu.au"
   
-writetest ::
-  IO ()
-writetest =
-  renderToFile "/tmp/z.html" (htmlLogbookDocument htmlAircraftFlightMeta htmlSimulatorFlightMeta htmlExamMeta htmlBriefingMeta logbook1007036)
 
---
+---- helpers, belong elsewhere
 
-sspan_ ::
-  [Attribute]
+
+totalDayNight ::
+  DayNight
+  -> TimeAmount
+totalDayNight (DayNight d n) =
+  d `mappend` n
+
+showCentsAsDollars ::
+  Int
   -> String
-  -> Html ()
-sspan_ c =
-  span_ c . fromString
+showCentsAsDollars n =
+  let pos ::
+        String
+        -> String
+      pos [] =
+        []
+      pos [x] =
+        "0.0" ++ [x]
+      pos [x, y] =
+        "0." ++ [y, x]
+      pos (x:y:z) =
+        reverse z ++ "." ++ [y, x]
+  in  (if n < 0 then ('-':) else id) . pos . reverse . show . abs $ n
+
+showThousandCentsAsDollars ::
+  Int
+  -> String
+showThousandCentsAsDollars n =
+  let pos ::
+        String
+        -> String
+      pos [] =
+        []
+      pos [x] =
+        [x] ++ "0.0"
+      pos [x, y] =
+        [x, y] ++ ".0"
+      pos [x, y, z] =
+        [x, y, z] ++ ".0"
+      pos (x:y:z:r) =
+        [x, y, z] ++ "." ++ r
+      drop0 [] =
+        []
+      drop0 ('0':r) =
+        r
+      drop0 w =
+        w
+  in  (if n < 0 then ('-':) else id) . reverse . drop0 . pos . reverse . show . abs $ n
+
+timeAmountBy10 ::
+  TimeAmount
+  -> Int
+timeAmountBy10 (TimeAmount a b) =
+  a * 10 + digit # b
 
 flightPathList ::
   FlightPath
@@ -3386,64 +3370,11 @@ whenEmpty _ [] =
 whenEmpty f x =
   f x
 
-----
-
-{-
-
-html{
-  font-family: "Inconsolata";
-  color: black;
-}
-
-a {
-  text-decoration: none;
-}
-
-.casr-logbook {
-  max-width: 940px;
-  margin: 10px auto 10px auto;
-}
-
-.header {
-  text-align: center;
-}
-
-.subheader {
-  font-size: xx-small;
-  text-align: center;
-}
-
-.austlii {
-  font-style: italic;
-}
+---- Test
 
 
+writetest ::
+  IO ()
+writetest =
+  renderToFile "/tmp/z.html" (htmlLogbookDocument htmlAircraftFlightMeta htmlSimulatorFlightMeta htmlExamMeta htmlBriefingMeta logbook1007036)
 
-/* ------- */
-
-.title {
-  text-align: center;
-}
-
-.subtitle {
-  font-size: xx-small;
-  text-align: center;
-}
-
-.austlii {
-  font-style: italic;
-}
-
-.personal {
-  background-color: #d3d3d3;
-}
-
-.heading {
-  font-weight: bold;
-}
-
-.personalinfo {
-  font-size: small;
-}
-
--}
