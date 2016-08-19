@@ -241,6 +241,13 @@ damienboyer =
     "Boyer"
     "Damien"
 
+clintdudman ::
+  Aviator
+clintdudman =
+  aviatorwithname
+    "Dudman"
+    "Clint"
+
 ryanmeyles ::
   Aviator
 ryanmeyles =
@@ -2359,6 +2366,46 @@ rpltestpreparationMeta =
   BriefingMeta
     [BriefingExpense 7700 "RPL test theory Prep"]
 
+rplrecommendation ::
+  AircraftFlight
+rplrecommendation =
+  dualonlyflight
+    "RPL(A) Recommendation"
+    vhafr
+    clintdudman
+    (day 1 x3)
+    (directcircuit (pointatdate "YBAF" (fromGregorian 2016 8 18)))
+    (parttimeamount x3)
+
+rplrecommendationMeta ::
+  AircraftFlightMeta
+rplrecommendationMeta =
+  AircraftFlightMeta
+    [
+      TrackLog
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/20160818-vh-vvo.gpx"
+        Gpx
+        (Just "Samsung Galaxy S4")
+        Nothing
+    , TrackLog
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20160818-vh-vvo.png"
+        (ImageTrackLog Png)
+        (Just "gpsvisualizer.com")
+        Nothing
+    ]
+    [
+      Doarama
+        "903352"
+        "emn77Zk"
+        Nothing
+    ]
+    []
+    []
+    [
+      vhvvoUnderInstruction
+    , vhvvoLanding
+    ]
+
 logbook1007036 ::
   Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
 logbook1007036 =
@@ -2430,6 +2477,7 @@ logbook1007036 =
     , BriefingEntry preexamBriefing2 preexamBriefing2Meta
     , ExamEntry rplexam rplexamMeta
     , BriefingEntry rpltestpreparation rpltestpreparationMeta
+    , AircraftFlightEntry rplrecommendation rplrecommendationMeta
     ]
 
 ----
@@ -3180,29 +3228,6 @@ htmlEntryTag (BriefingEntry e _) =
                           ]
   in  a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "BRF"
 
-htmlEntry ::
-  Entry AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
-  -> Html ()
-htmlEntry x =
-  do  htmlEntryTag x
-      case x of
-        AircraftFlightEntry e ae ->
-          do  div_ [] $
-                do  htmlAircraftFlight e
-                    htmlAircraftFlightMeta e ae
-        SimulatorFlightEntry e ae ->
-          do  div_ [] $
-                do  htmlSimulatorFlight e
-                    htmlSimulatorFlightMeta e ae
-        ExamEntry e ae ->
-          do  div_ [] $
-                do  htmlExam e
-                    htmlExamMeta e ae
-        BriefingEntry e ae ->
-          do  div_ [] $
-                do  htmlBriefing e
-                    htmlBriefingMeta e ae
-  
 htmlSimulatorFlightMeta ::
   SimulatorFlight
   -> SimulatorFlightMeta
@@ -3233,18 +3258,53 @@ htmlBriefingMeta b (BriefingMeta s) =
         ul_ [] $
           mapM_ (li_ [class_ "expense"] . htmlBriefingExpense b) q) s
 
-htmlEntries ::
-  Entries AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
+htmlEntry :: 
+  (AircraftFlight -> a -> Html x)
+  -> (SimulatorFlight -> b -> Html x)
+  -> (Exam -> c -> Html x)
+  -> (Briefing -> d -> Html x)
+  -> Entry a b c d
+  -> Html x
+htmlEntry aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' x =
+  do  htmlEntryTag x
+      case x of
+        AircraftFlightEntry e ae ->
+          do  div_ [] $
+                do  htmlAircraftFlight e
+                    aircraftFlightMeta' e ae
+        SimulatorFlightEntry e ae ->
+          do  div_ [] $
+                do  htmlSimulatorFlight e
+                    simulatorFlightMeta' e ae
+        ExamEntry e ae ->
+          do  div_ [] $
+                do  htmlExam e
+                    examMeta' e ae
+        BriefingEntry e ae ->
+          do  div_ [] $
+                do  htmlBriefing e
+                    briefingMeta' e ae
+  
+htmlEntries :: 
+  (AircraftFlight -> a -> Html x)
+  -> (SimulatorFlight -> b -> Html x)
+  -> (Exam -> c -> Html x)
+  -> (Briefing -> d -> Html x)
+  -> Entries a b c d
   -> Html ()
-htmlEntries (Entries es) =
-  mapM_ (\e -> hr_ [] *> htmlEntry e) es
+htmlEntries aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' (Entries es) =
+  mapM_ (\e -> hr_ [] *> htmlEntry aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' e) es
 
 htmlLogbook ::
-  Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
+  (AircraftFlight -> a -> Html x)
+  -> (SimulatorFlight -> b -> Html x)
+  -> (Exam -> c -> Html x)
+  -> (Briefing -> d -> Html x)
+  -> Logbook a b c d
   -> Html ()
-htmlLogbook (Logbook a es) =
+htmlLogbook aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' (Logbook a es) =
   do  htmlAviator a
-      htmlEntries es
+      htmlEntries aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' es
 
 ----
 
@@ -3263,9 +3323,13 @@ htmlTitleAviator a =
                 ])
 
 htmlLogbookDocument ::
-  Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
+  (AircraftFlight -> a -> Html x)
+  -> (SimulatorFlight -> b -> Html x)
+  -> (Exam -> c -> Html x)
+  -> (Briefing -> d -> Html x)
+  -> Logbook a b c d
   -> Html ()
-htmlLogbookDocument b =
+htmlLogbookDocument aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' b =
   do  doctype_
       html_ [lang_ "en"] $
         do  head_ $ 
@@ -3277,7 +3341,7 @@ htmlLogbookDocument b =
                   script_ [type_ "text/javascript", src_ "https://raw.github.com/Mathapedia/LaTeX2HTML5/master/latex2html5.min.js"] ("" :: Text.Text)                  
             body_ [class_ "casr-logbook"] $ 
               do  htmlLogbookHeader b
-                  htmlLogbook b
+                  htmlLogbook aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' b
 
 htmlLogbookHeader ::
   Logbook a b c d
@@ -3295,7 +3359,7 @@ htmlLogbookHeader _ =
 writetest ::
   IO ()
 writetest =
-  renderToFile "/tmp/z.html" (htmlLogbookDocument logbook1007036)
+  renderToFile "/tmp/z.html" (htmlLogbookDocument htmlAircraftFlightMeta htmlSimulatorFlightMeta htmlExamMeta htmlBriefingMeta logbook1007036)
 
 --
 
