@@ -18,6 +18,8 @@ import Data.List
 import Data.Time
 import Data.String
 import Control.Monad
+import Data.Map(Map)
+import qualified Data.Map as Map
 import Data.Maybe
 import Data.Monoid hiding (Dual)
 import qualified Data.Text as Text
@@ -2480,6 +2482,218 @@ logbook1007036 =
     , AircraftFlightEntry rplrecommendation rplrecommendationMeta
     ]
 
+---- Reports
+
+data FlightTimeReport =
+  FlightTimeReport {
+    _hoursTotal ::
+      TimeAmount -- Hours total
+  , _hoursTotalICUS ::
+      TimeAmount --   Hours total in-command under-instruction
+  , _hoursTotalDual ::
+      TimeAmount --   Hours total dual under-instruction
+  , _hoursTotalInCommand ::
+      TimeAmount --   Hours total in-command
+    -- Hours in aircraft type
+    --   Hours in aircraft type in-command under-instruction
+    --   Hours in aircraft type dual under-instruction
+    --   Hours in aircraft type in-command
+  , _hoursInAircraftType ::
+      Map String (TimeAmount, TimeAmount, TimeAmount, TimeAmount)
+    -- Hours in aircraft registration
+    --   Hours in aircraft registration in-command under-instruction
+    --   Hours in aircraft registration dual under-instruction
+    --   Hours in aircraft registration in-command
+  , _hoursInAircraftRegistration ::
+      Map String (TimeAmount, TimeAmount, TimeAmount, TimeAmount)
+  , _hoursSingleEngine ::
+      TimeAmount -- Hours in single-engine
+  , _hoursSingleEngineICUS ::
+      TimeAmount --   Hours in single-engine in-command under-instruction
+  , _hoursSingleEngineDual :: 
+      TimeAmount --   Hours in single-engine dual under-instruction
+  , _hoursSingleEngineInCommand ::
+      TimeAmount --   Hours in single-engine in-command
+  , _hoursMultiEngine ::
+      TimeAmount -- Hours in multi-engine
+  , _hoursMultiEngineICUS ::
+      TimeAmount --   Hours multi-engine in-command under-instruction
+  , _hoursMultiEngineDual ::
+      TimeAmount --   Hours multi-engine dual under-instruction
+  , _hoursMultiEngineInCommand ::
+      TimeAmount --   Hours multi-engine in-command
+  , _hoursDay ::
+      TimeAmount -- Hours during day
+  , _hoursDayICUS ::
+      TimeAmount --   Hours during day in-command under-instruction
+  , _hoursDayDual ::
+      TimeAmount --   Hours during day dual under-instruction
+  , _hoursDayInCommand ::
+      TimeAmount --   Hours during day in-command
+  , _hoursNight ::
+      TimeAmount -- Hours during night
+  , _hoursNightICUS ::
+      TimeAmount --   Hours during night in-command under-instruction
+  , _hoursNightDual ::
+      TimeAmount --   Hours during night dual under-instruction
+  , _hoursNightInCommand ::
+      TimeAmount --   Hours during night in-command
+  , _hoursWithPiC ::
+      Map Aviator TimeAmount -- Hours with PiC
+  , _hoursInstrument ::
+      TimeAmount -- Hours instrument flight
+  } deriving (Eq, Ord, Show)
+
+makeClassy ''FlightTimeReport
+
+instance Monoid FlightTimeReport where
+  mempty =
+    FlightTimeReport
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+  FlightTimeReport tl1 tli1 tld1 tlc1 tp1 rg1 se1 sei1 sed1 sec1 me1 mei1 med1 mec1 dy1 dyi1 dyd1 dyc1 nt1 nti1 ntd1 ntc1 wpc1 is1 `mappend` FlightTimeReport tl2 tli2 tld2 tlc2 tp2 rg2 se2 sei2 sed2 sec2 me2 mei2 med2 mec2 dy2 dyi2 dyd2 dyc2 nt2 nti2 ntd2 ntc2 wpc2 is2 =
+    FlightTimeReport
+      (tl1 `mappend` tl2)
+      (tli1 `mappend` tli2)
+      (tld1 `mappend` tld2)
+      (tlc1 `mappend` tlc2)
+      (Map.unionWith mappend tp1 tp2)
+      (Map.unionWith mappend rg1 rg2)
+      (se1 `mappend` se2)
+      (sei1 `mappend` sei2)
+      (sed1 `mappend` sed2)
+      (sec1 `mappend` sec2)
+      (me1 `mappend` me2)
+      (mei1 `mappend` mei2)
+      (med1 `mappend` med2)
+      (mec1 `mappend` mec2)
+      (dy1 `mappend` dy2)
+      (dyi1 `mappend` dyi2)
+      (dyd1 `mappend` dyd2)
+      (dyc1 `mappend` dyc2)
+      (nt1 `mappend` nt2)
+      (nti1 `mappend` nti2)
+      (ntd1 `mappend` ntd2)
+      (ntc1 `mappend` ntc2)
+      (Map.unionWith mappend wpc1 wpc2)
+      (is1 `mappend` is2)
+
+singleFlightTimeReport ::
+  Entry a b c d
+  -> FlightTimeReport
+singleFlightTimeReport (AircraftFlightEntry fl _) =
+  let hoursdaynight = totalDayNight (fl ^. daynight)
+      icus x =
+        case fl ^. command of
+          ICUS _ ->
+            x
+          Dual _ ->
+            mempty
+          InCommand ->
+            mempty
+      dual x =
+        case fl ^. command of
+          ICUS _ ->
+            mempty
+          Dual _ ->
+            x
+          InCommand ->
+            mempty            
+      comd x =
+        case fl ^. command of
+          ICUS _ ->
+            mempty
+          Dual _ ->
+            mempty
+          InCommand ->
+            x
+      hoursmap k =
+        Map.singleton k (hoursdaynight, (icus hoursdaynight), (dual hoursdaynight), (comd hoursdaynight))
+      singleengine x =
+        case fl ^. flightaircraft . aircraftEngine of
+          Single ->
+            x
+          Multi ->
+            mempty
+      multiengine x =
+        case fl ^. flightaircraft . aircraftEngine of
+          Single ->
+            mempty
+          Multi ->
+            x
+      totalhoursday =
+        fl ^. daynight . dayDayNight
+      totalhoursnight =
+        fl ^. daynight . nightDayNight
+      pic x =
+        case getInstructingPic (fl ^. command) of
+          Just a ->
+            Map.singleton a x
+          Nothing ->
+            Map.empty
+  in  FlightTimeReport
+        hoursdaynight
+        (icus hoursdaynight)
+        (dual hoursdaynight)
+        (comd hoursdaynight)
+        (hoursmap (fl ^. flightaircraft . aircraftType))
+        (hoursmap (fl ^. flightaircraft . aircraftRegistration))
+        (singleengine hoursdaynight)
+        (singleengine (icus hoursdaynight))
+        (singleengine (dual hoursdaynight))
+        (singleengine (comd hoursdaynight))
+        (multiengine hoursdaynight)
+        (multiengine (icus hoursdaynight))
+        (multiengine (dual hoursdaynight))
+        (multiengine (comd hoursdaynight))
+        totalhoursday
+        (icus totalhoursday)
+        (dual totalhoursday)
+        (comd totalhoursday)
+        totalhoursnight
+        (icus totalhoursnight)
+        (dual totalhoursnight)
+        (comd totalhoursnight)
+        (pic hoursdaynight)
+        (fl ^. instrumentflightTime)
+singleFlightTimeReport _ =
+  mempty
+
+getFlightTimeReport ::
+  Logbook a b c d
+  -> FlightTimeReport
+getFlightTimeReport (Logbook _ (Entries es)) =
+  foldl' (\a -> mappend a . singleFlightTimeReport) mempty es
+
+htmlFlightTimeReport ::
+  Logbook a b c d
+  -> FlightTimeReport
+  -> Html ()
+htmlFlightTimeReport _ r =
+  fromString (show r)
+
 ---- Html (meta)
 
 htmlAircraftUsageExpense ::
@@ -3242,10 +3456,13 @@ htmlLogbook ::
   -> (SimulatorFlight -> b -> Html x)
   -> (Exam -> c -> Html x)
   -> (Briefing -> d -> Html x)
+  -> Html ()
   -> Logbook a b c d
   -> Html ()
-htmlLogbook aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' (Logbook a es) =
+htmlLogbook aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' reports' (Logbook a es) =
   do  htmlAviator a
+      hr_ []
+      reports'
       htmlEntries aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' es
 
 htmlTitleAviator ::
@@ -3267,9 +3484,10 @@ htmlLogbookDocument ::
   -> (SimulatorFlight -> b -> Html x)
   -> (Exam -> c -> Html x)
   -> (Briefing -> d -> Html x)
+  -> Html ()
   -> Logbook a b c d
   -> Html ()
-htmlLogbookDocument aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' b =
+htmlLogbookDocument aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' reports' b =
   do  doctype_
       html_ [lang_ "en"] $
         do  head_ $ 
@@ -3281,7 +3499,7 @@ htmlLogbookDocument aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingM
                   script_ [type_ "text/javascript", src_ "https://raw.github.com/Mathapedia/LaTeX2HTML5/master/latex2html5.min.js"] ("" :: Text.Text)                  
             body_ [class_ "casr-logbook"] $ 
               do  htmlLogbookHeader b
-                  htmlLogbook aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' b
+                  htmlLogbook aircraftFlightMeta' simulatorFlightMeta' examMeta' briefingMeta' reports' b
 
 htmlLogbookHeader ::
   Logbook a b c d
@@ -3295,7 +3513,6 @@ htmlLogbookHeader _ =
               " "
               span_ [class_ "austlii"] $
                 a_ [href_ "http://www.austlii.edu.au/au/legis/cth/consol_reg/casr1998333/s61.345.html"] "austlii.edu.au"
-  
 
 ---- helpers, belong elsewhere
 
@@ -3305,6 +3522,17 @@ totalDayNight ::
   -> TimeAmount
 totalDayNight (DayNight d n) =
   d `mappend` n
+
+getInstructingPic ::
+  Command
+  -> Maybe Aviator
+getInstructingPic (ICUS a) =
+  Just a
+getInstructingPic (Dual a) =
+  Just a
+getInstructingPic InCommand =
+  Nothing
+
 
 showCentsAsDollars ::
   Int
@@ -3376,5 +3604,5 @@ whenEmpty f x =
 writetest ::
   IO ()
 writetest =
-  renderToFile "/tmp/z.html" (htmlLogbookDocument htmlAircraftFlightMeta htmlSimulatorFlightMeta htmlExamMeta htmlBriefingMeta logbook1007036)
+  renderToFile "/tmp/z.html" (htmlLogbookDocument htmlAircraftFlightMeta htmlSimulatorFlightMeta htmlExamMeta htmlBriefingMeta (htmlFlightTimeReport logbook1007036 (getFlightTimeReport logbook1007036)) logbook1007036)
 

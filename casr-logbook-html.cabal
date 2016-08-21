@@ -35,7 +35,7 @@ library
                     base < 5 && >= 4.8
                     , casr-logbook
                     , lucid
-                    , lens, digit, time, text
+                    , lens, digit, time, text, containers
                     
   ghc-options:
                     -Wall
