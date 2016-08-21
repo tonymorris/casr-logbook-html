@@ -98,6 +98,14 @@ a {
   font-style: italic;
 }
 
+.aircrafttype {
+  font-weight: bold;
+}
+
+.aircraftregistration {
+  font-weight: bold;
+}
+
 /* ------- */
 
 .title {

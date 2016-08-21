@@ -2541,7 +2541,7 @@ data FlightTimeReport =
   , _hoursWithPiC ::
       Map Aviator TimeAmount -- Hours with PiC
   , _hoursInstrument ::
-      TimeAmount -- Hours instrument flight
+      TimeAmount -- Hours instrument in-flight
   } deriving (Eq, Ord, Show)
 
 makeClassy ''FlightTimeReport
@@ -2692,7 +2692,148 @@ htmlFlightTimeReport ::
   -> FlightTimeReport
   -> Html ()
 htmlFlightTimeReport _ r =
-  fromString (show r)
+  div_ [class_ "flighttimereport"] $
+    do  h3_ [class_ "flighttimereportname"] "Flight Time Summary Report"          
+        ul_ [] $
+          do  li_ [] $
+                do  span_ [class_ "key"] "Total Hours: "
+                    span_ [class_ "value"] .
+                      htmlTimeAmount $ r ^. hoursTotal
+                    ul_ [] $
+                      do  li_ [] $
+                            do  span_ [class_ "key"] "in-command under-instruction: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursTotalICUS
+                          li_ [] $
+                            do  span_ [class_ "key"] "dual under-instruction: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursTotalDual
+                          li_ [] $
+                            do  span_ [class_ "key"] "in-command: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursTotalInCommand
+              li_ [] $
+                do  span_ [class_ "key"] "Hours in type: "
+                    span_ [class_ "value"] .
+                      ul_ [] . Map.foldrWithKey (\y (tl, iu, dl, ic) x ->
+                        li_ [] $
+                          do  span_ [class_ "aircrafttype"] $ fromString y
+                              ul_ [] $
+                                do  li_ [] $
+                                      do  span_ [class_ "key"] "total: "
+                                          span_ [class_ "value"] . htmlTimeAmount $ tl
+                                    li_ [] $
+                                      do  span_ [class_ "key"] "in-command under-instruction: "
+                                          span_ [class_ "value"] . htmlTimeAmount $ iu
+                                    li_ [] $
+                                      do  span_ [class_ "key"] "dual under-instruction: "
+                                          span_ [class_ "value"] . htmlTimeAmount $ dl
+                                    li_ [] $
+                                      do  span_ [class_ "key"] "in-command: "
+                                          span_ [class_ "value"] . htmlTimeAmount $ ic
+                              x) mempty $ r ^. hoursInAircraftType
+              li_ [] $
+                do  span_ [class_ "key"] "Hours in registration: "
+                    span_ [class_ "value"] .
+                      ul_ [] . Map.foldrWithKey (\y (tl, iu, dl, ic) x ->
+                        li_ [] $
+                          do  span_ [class_ "aircraftregistration"] $ fromString y
+                              ul_ [] $
+                                do  li_ [] $
+                                      do  span_ [class_ "key"] "total: "
+                                          span_ [class_ "value"] . htmlTimeAmount $ tl
+                                    li_ [] $
+                                      do  span_ [class_ "key"] "in-command under-instruction: "
+                                          span_ [class_ "value"] . htmlTimeAmount $ iu
+                                    li_ [] $
+                                      do  span_ [class_ "key"] "dual under-instruction: "
+                                          span_ [class_ "value"] . htmlTimeAmount $ dl
+                                    li_ [] $
+                                      do  span_ [class_ "key"] "in-command: "
+                                          span_ [class_ "value"] . htmlTimeAmount $ ic
+                              x) mempty $ r ^. hoursInAircraftRegistration
+              li_ [] $
+                do  span_ [class_ "key"] "Hours in Single-Engine: "
+                    span_ [class_ "value"] .
+                      htmlTimeAmount $ r ^. hoursSingleEngine
+                    ul_ [] $
+                      do  li_ [] $
+                            do  span_ [class_ "key"] "in-command under-instruction: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursSingleEngineICUS
+                          li_ [] $
+                            do  span_ [class_ "key"] "dual under-instruction: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursSingleEngineDual
+                          li_ [] $
+                            do  span_ [class_ "key"] "in-command: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursSingleEngineInCommand
+              li_ [] $
+                do  span_ [class_ "key"] "Hours in Multi-Engine: "
+                    span_ [class_ "value"] .
+                      htmlTimeAmount $ r ^. hoursMultiEngine
+                    ul_ [] $
+                      do  li_ [] $
+                            do  span_ [class_ "key"] "in-command under-instruction: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursMultiEngineICUS
+                          li_ [] $
+                            do  span_ [class_ "key"] "dual under-instruction: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursMultiEngineDual
+                          li_ [] $
+                            do  span_ [class_ "key"] "in-command: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursMultiEngineInCommand
+              li_ [] $
+                do  span_ [class_ "key"] "Hours in Day: "
+                    span_ [class_ "value"] .
+                      htmlTimeAmount $ r ^. hoursDay
+                    ul_ [] $
+                      do  li_ [] $
+                            do  span_ [class_ "key"] "in-command under-instruction: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursDayICUS
+                          li_ [] $
+                            do  span_ [class_ "key"] "dual under-instruction: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursDayDual
+                          li_ [] $
+                            do  span_ [class_ "key"] "in-command: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursDayInCommand
+              li_ [] $
+                do  span_ [class_ "key"] "Hours in Night: "
+                    span_ [class_ "value"] .
+                      htmlTimeAmount $ r ^. hoursNight
+                    ul_ [] $
+                      do  li_ [] $
+                            do  span_ [class_ "key"] "in-command under-instruction: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursNightICUS
+                          li_ [] $
+                            do  span_ [class_ "key"] "dual under-instruction: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursNightDual
+                          li_ [] $
+                            do  span_ [class_ "key"] "in-command: "
+                                span_ [class_ "value"] .
+                                  htmlTimeAmount $ r ^. hoursNightInCommand
+              li_ [] $
+                do  span_ [class_ "key"] "Hours with PiC: "
+                    span_ [class_ "value"] .
+                      ul_ [] . Map.foldrWithKey (\a t x ->
+                        li_ [] $
+                          do  span_ [class_ "key"] $ 
+                                do  htmlAviatorShort a
+                                    ": "
+                              span_ [class_ "value"] . htmlTimeAmount $ t                                      
+                              x) mempty $ r ^. hoursWithPiC
+              li_ [] $
+                do  span_ [class_ "key"] "Hours instrument in-flight: "
+                    span_ [class_ "value"] .
+                      htmlTimeAmount $ r ^. hoursInstrument                        
 
 ---- Html (meta)
 
@@ -3087,9 +3228,9 @@ htmlAviatorShort (Aviator s f a _ r) =
   do  fromString f
       " "
       fromString s
-      " "
+      when (not . null $ a) $ " "
       fromString (a >>= show)
-      " "
+      when (not . null $ r) $ " "
       htmlRatingsShort r
 
 htmlFlightPoint ::
