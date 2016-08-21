@@ -2696,7 +2696,7 @@ htmlFlightTimeReport _ r =
     do  h3_ [class_ "flighttimereportname"] "Flight Time Summary Report"          
         ul_ [] $
           do  li_ [] $
-                do  span_ [class_ "key"] "Total Hours: "
+                do  span_ [class_ "key"] "Total Flight Hours: "
                     span_ [class_ "value"] .
                       htmlTimeAmount $ r ^. hoursTotal
                     ul_ [] $
