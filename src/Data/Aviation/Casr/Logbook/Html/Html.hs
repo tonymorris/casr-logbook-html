@@ -2525,7 +2525,9 @@ logbook1007036 =
 
 data FlightTimeReport =
   FlightTimeReport {
-    _hoursTotal ::
+    _flightsTotal ::
+      Int
+  , _hoursTotal ::
       TimeAmount -- Hours total
   , _hoursTotalICUS ::
       TimeAmount --   Hours total in-command under-instruction
@@ -2588,6 +2590,7 @@ makeClassy ''FlightTimeReport
 instance Monoid FlightTimeReport where
   mempty =
     FlightTimeReport
+      0
       mempty
       mempty
       mempty
@@ -2612,8 +2615,9 @@ instance Monoid FlightTimeReport where
       mempty
       mempty
       mempty
-  FlightTimeReport tl1 tli1 tld1 tlc1 tp1 rg1 se1 sei1 sed1 sec1 me1 mei1 med1 mec1 dy1 dyi1 dyd1 dyc1 nt1 nti1 ntd1 ntc1 wpc1 is1 `mappend` FlightTimeReport tl2 tli2 tld2 tlc2 tp2 rg2 se2 sei2 sed2 sec2 me2 mei2 med2 mec2 dy2 dyi2 dyd2 dyc2 nt2 nti2 ntd2 ntc2 wpc2 is2 =
+  FlightTimeReport ft1 tl1 tli1 tld1 tlc1 tp1 rg1 se1 sei1 sed1 sec1 me1 mei1 med1 mec1 dy1 dyi1 dyd1 dyc1 nt1 nti1 ntd1 ntc1 wpc1 is1 `mappend` FlightTimeReport ft2 tl2 tli2 tld2 tlc2 tp2 rg2 se2 sei2 sed2 sec2 me2 mei2 med2 mec2 dy2 dyi2 dyd2 dyc2 nt2 nti2 ntd2 ntc2 wpc2 is2 =
     FlightTimeReport
+      (ft1 + ft2)
       (tl1 `mappend` tl2)
       (tli1 `mappend` tli2)
       (tld1 `mappend` tld2)
@@ -2693,6 +2697,7 @@ singleFlightTimeReport (AircraftFlightEntry fl _) =
           Nothing ->
             Map.empty
   in  FlightTimeReport
+        1
         hoursdaynight
         (icus hoursdaynight)
         (dual hoursdaynight)
@@ -2735,6 +2740,9 @@ htmlFlightTimeReport _ r =
     do  h3_ [class_ "flighttimereportname"] "Flight Time Summary Report"          
         ul_ [] $
           do  li_ [] $
+                do  span_ [class_ "key"] "Total Flights: "
+                    span_ [class_ "value"] . fromString . show $ (r ^. flightsTotal)
+              li_ [] $
                 do  span_ [class_ "key"] "Total Flight Hours: "
                     span_ [class_ "value"] .
                       htmlTimeAmount $ r ^. hoursTotal
