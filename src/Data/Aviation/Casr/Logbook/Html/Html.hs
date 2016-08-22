@@ -2417,9 +2417,9 @@ areasolo3 =
     (day 1 x1)
     (directcircuit (pointatdate "YBAF" (fromGregorian 2016 8 22)))    
     
-areasolo2Meta ::
+areasolo3Meta ::
   AircraftFlightMeta
-areasolo2Meta =
+areasolo3Meta =
   AircraftFlightMeta
     [
       TrackLog
