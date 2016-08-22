@@ -2408,6 +2408,44 @@ rplrecommendationMeta =
     , vhvvoLanding
     ]
 
+areasolo3 ::
+  AircraftFlight
+areasolo3 =
+  noif_commandonlyflight
+    "Area Solo"
+    vhafr
+    (day 1 x1)
+    (directcircuit (pointatdate "YBAF" (fromGregorian 2016 8 22)))    
+    
+areasolo2Meta ::
+  AircraftFlightMeta
+areasolo2Meta =
+  AircraftFlightMeta
+    [
+      TrackLog
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/20160822-vh-afr.gpx"
+        Gpx
+        (Just "Samsung Galaxy S4")
+        Nothing
+    , TrackLog
+        "https://raw.githubusercontent.com/tonymorris/ppl/master/tracks/png/20160822-vh-afr.png"
+        (ImageTrackLog Png)
+        (Just "gpsvisualizer.com")
+        Nothing
+    ]
+    [
+      Doarama
+        "911431"
+        ""
+        Nothing
+    ]
+    []
+    []
+    [
+      flightoneC172AircraftUsageExpense "VH-AFR 3rd area solo"
+    , vhafrLanding
+    ]
+
 logbook1007036 ::
   Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
 logbook1007036 =
@@ -2480,6 +2518,7 @@ logbook1007036 =
     , ExamEntry rplexam rplexamMeta
     , BriefingEntry rpltestpreparation rpltestpreparationMeta
     , AircraftFlightEntry rplrecommendation rplrecommendationMeta
+    , AircraftFlightEntry areasolo3 areasolo3Meta
     ]
 
 ---- Reports
