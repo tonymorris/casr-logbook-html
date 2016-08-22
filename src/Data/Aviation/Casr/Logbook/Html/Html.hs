@@ -471,7 +471,7 @@ straightandlevelMeta =
 climbinganddescendingBriefing ::
   Briefing
 climbinganddescendingBriefing =
-  Briefing "Climbing and Descending" flightone (dayonly (fromGregorian 2015 12 20)) ryanlow (TimeAmount 1 x0)
+  Briefing "Climbing and Descending" flightone (dayonly (fromGregorian 2015 12 20)) michaelward (TimeAmount 1 x0)
 
 climbinganddescendingBriefingMeta ::
   BriefingMeta
@@ -1674,7 +1674,7 @@ steepturns =
   noif_dualonlyflight
     "Steep Turns"
     vhvvo
-    davidschofield
+    ryanlow
     (day 1 x1)
     (directcircuit (pointatdate "YBAF" (fromGregorian 2016 5 19)))    
     
