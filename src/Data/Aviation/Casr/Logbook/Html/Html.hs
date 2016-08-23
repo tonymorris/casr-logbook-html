@@ -2766,6 +2766,33 @@ takeoffslandings90 b =
         _ ->
           Nothing
 
+data SimulatorTimeReport =
+  SimulatorTimeReport {
+    _hoursTotalSimulator ::
+      TimeAmount
+  , _hoursInstrumentSimulator ::
+      TimeAmount
+  }
+  deriving (Eq, Ord, Show)
+
+makeClassy ''SimulatorTimeReport
+
+instance Monoid SimulatorTimeReport where
+  mempty =
+    SimulatorTimeReport
+      mempty
+      mempty
+  SimulatorTimeReport t1 i1 `mappend` SimulatorTimeReport t2 i2 =
+    SimulatorTimeReport (t1 `mappend` t2) (i1 `mappend` i2)
+
+singleSimulatorTimeReport ::
+  Entry a b c d
+  -> FlightTimeReport
+singleSimulatorTimeReport (SimulatorFlightEntry fl _) =
+  undefinedv -- todo
+singleSimulatorTimeReport _ =
+  mempty
+
 data FlightTimeReport =
   FlightTimeReport {
     _flightsTotal ::
