@@ -736,7 +736,7 @@ circuits1 ::
   AircraftFlight
 circuits1 =
   noif_dualonlyflight
-    "Circuits"
+    "Circuits 1"
     vhafr
     davidschofield
     (day 1 x1)
@@ -832,7 +832,7 @@ circuits2 ::
   AircraftFlight
 circuits2 =
   noif_dualonlyflight
-    "Circuits"
+    "Circuits 2"
     vhafr
     davidschofield
     (day 1 x1)
@@ -928,7 +928,7 @@ circuits3 ::
   AircraftFlight
 circuits3 =
   noif_dualonlyflight
-    "Circuits"
+    "Circuits 3"
     vhafr
     davidschofield
     (day 1 x1)
@@ -967,7 +967,7 @@ circuits4 ::
   AircraftFlight
 circuits4 =
   noif_dualonlyflight
-    "Circuits"
+    "Circuits 4"
     vhafr
     davidschofield
     (day 1 x1)
@@ -1023,7 +1023,7 @@ circuitemergencies1 ::
   AircraftFlight
 circuitemergencies1 =
   noif_dualonlyflight
-    "Circuit Emergencies"
+    "Circuit Emergencies 1"
     vhafr
     davidschofield
     (day 1 x1)
@@ -1177,7 +1177,7 @@ circuitemergencies2 ::
   AircraftFlight
 circuitemergencies2 =
   noif_dualonlyflight
-    "Circuit Emergencies"
+    "Circuit Emergencies 2"
     vhafr
     davidschofield
     (day 1 x1)
@@ -1250,7 +1250,7 @@ circuitemergencies3 ::
   AircraftFlight
 circuitemergencies3 =
   noif_dualonlyflight
-    "Circuit Emergencies"
+    "Circuit Emergencies 3"
     vhzwy
     davidschofield
     (day 1 x0)
@@ -1306,7 +1306,7 @@ circuits5 ::
   AircraftFlight
 circuits5 =
   noif_dualonlyflight
-    "Circuits"
+    "Circuits 5"
     vhzwy
     davidschofield
     (day 0 x9)
@@ -1963,7 +1963,7 @@ areasolo1 ::
   AircraftFlight
 areasolo1 =
   noif_commandonlyflight
-    "Area Solo"
+    "Area Solo 1"
     vhvvo
     (day 1 x5)
     (directcircuit (pointatdate "YBAF" (fromGregorian 2016 6 17)))    
@@ -2028,7 +2028,7 @@ areasolo2 ::
   AircraftFlight
 areasolo2 =
   noif_commandonlyflight
-    "Area Solo"
+    "Area Solo 2"
     vhvvo
     (day 1 x1)
     (directcircuit (pointatdate "YBAF" (fromGregorian 2016 6 26)))    
@@ -2511,7 +2511,7 @@ areasolo3 ::
   AircraftFlight
 areasolo3 =
   noif_commandonlyflight
-    "Area Solo"
+    "Area Solo 3"
     vhafr
     (day 1 x1)    
     (circuitsatdate "YBAF" 3 (fromGregorian 2016 8 22))
@@ -2607,8 +2607,8 @@ logbook1007036 =
     , BriefingEntry basicinstrumentflightBriefing2 basicinstrumentflightBriefing2Meta
     , AircraftFlightEntry shortfieldtakeofflanding shortfieldtakeofflandingMeta
     , BriefingEntry shortfieldtakeofflandingBriefing shortfieldtakeofflandingBriefingMeta
+    , BriefingEntry precautionarysearchandlandingBriefing precautionarysearchandlandingBriefingMeta
     , AircraftFlightEntry precautionarysearchandlanding precautionarysearchandlandingMeta
-    , BriefingEntry shortfieldtakeofflandingBriefing shortfieldtakeofflandingBriefingMeta
     , AircraftFlightEntry generalrevision generalrevisionMeta
     , BriefingEntry generalrevisionBriefing generalrevisionBriefingMeta
     , BriefingEntry preexamBriefing preexamBriefingMeta
@@ -2660,7 +2660,8 @@ htmlExpenseReport ::
   -> Html ()
 htmlExpenseReport _ (ExpenseReport ag al b e s) =
   div_ [class_ "expensereport"] $
-    do  a_ [href_ (Text.pack ('#' : "RPT_Expense"))] . span_ [class_ "entrytag"] $ "RPT"
+    do  a_ [id_ "RPT_Expense"] ""
+        a_ [href_ (Text.pack ("#RPT_Expense"))] . span_ [class_ "entrytag"] $ "RPT"
         h3_ [class_ "expensereportname"] "Expense Report"     
         do  ul_ [] $
               do  li_ [] $
@@ -2722,7 +2723,8 @@ htmlTakeOffLanding90 ::
   -> Html ()
 htmlTakeOffLanding90 _ r =
   div_ [class_ "flighttimecurrencyreport"] $
-    do  a_ [href_ (Text.pack ('#' : "RPT_FlightTimeCurrency"))] . span_ [class_ "entrytag"] $ "RPT"
+    do  a_ [id_ "RPT_FlightTimeCurrency"] ""
+        a_ [href_ (Text.pack ("#RPT_FlightTimeCurrency"))] . span_ [class_ "entrytag"] $ "RPT"
         h3_ [class_ "flighttimecurrencyreportname"] "Flight Time Currency Report"                    
         case r of
           Nothing ->
@@ -2824,7 +2826,8 @@ htmlSimulatorTimeReport ::
   -> Html ()
 htmlSimulatorTimeReport _ r =
   div_ [class_ "simulatortimereport"] $
-    do  a_ [href_ (Text.pack ('#' : "RPT_SimulatorTimeSummary"))] . span_ [class_ "entrytag"] $ "RPT"
+    do  a_ [id_ "RPT_SimulatorTimeSummary"] ""
+        a_ [href_ (Text.pack ("#RPT_SimulatorTimeSummary"))] . span_ [class_ "entrytag"] $ "RPT"
         h3_ [class_ "simulatortimereportname"] "Simulator Time Summary Report"          
         ul_ [] $
           do  li_ [] $
@@ -3041,7 +3044,7 @@ htmlFlightTimeReport ::
   -> Html ()
 htmlFlightTimeReport _ r =
   div_ [class_ "flighttimereport"] $
-    do  a_ [name_ "RPT_FlightTimeSummary"] ""
+    do  a_ [id_ "RPT_FlightTimeSummary"] ""
         a_ [href_ (Text.pack "#RPT_FlightTimeSummary")] . span_ [class_ "entrytag"] $ "RPT"
         h3_ [class_ "flighttimereportname"] "Flight Time Summary Report"          
         ul_ [] $
@@ -3069,42 +3072,42 @@ htmlFlightTimeReport _ r =
                 do  span_ [class_ "key"] "Hours in type: "
                     div_ [class_ "value"] .
                       ul_ [] . Map.foldrWithKey (\y (tl, iu, dl, ic) x ->
-                        li_ [] $
-                          do  span_ [class_ "aircrafttype"] $ fromString y
-                              ul_ [] $
-                                do  li_ [] $
-                                      do  span_ [class_ "key"] "total: "
-                                          span_ [class_ "value"] . htmlTimeAmount $ tl
-                                    li_ [] $
-                                      do  span_ [class_ "key"] "in-command under-instruction: "
-                                          span_ [class_ "value"] . htmlTimeAmount $ iu
-                                    li_ [] $
-                                      do  span_ [class_ "key"] "dual under-instruction: "
-                                          span_ [class_ "value"] . htmlTimeAmount $ dl
-                                    li_ [] $
-                                      do  span_ [class_ "key"] "in-command: "
-                                          span_ [class_ "value"] . htmlTimeAmount $ ic
-                              x) mempty $ r ^. hoursInAircraftType
+                        do  li_ [] $
+                              do  span_ [class_ "aircrafttype"] $ fromString y
+                                  ul_ [] $
+                                    do  li_ [] $
+                                          do  span_ [class_ "key"] "total: "
+                                              span_ [class_ "value"] . htmlTimeAmount $ tl
+                                        li_ [] $
+                                          do  span_ [class_ "key"] "in-command under-instruction: "
+                                              span_ [class_ "value"] . htmlTimeAmount $ iu
+                                        li_ [] $
+                                          do  span_ [class_ "key"] "dual under-instruction: "
+                                              span_ [class_ "value"] . htmlTimeAmount $ dl
+                                        li_ [] $
+                                          do  span_ [class_ "key"] "in-command: "
+                                              span_ [class_ "value"] . htmlTimeAmount $ ic
+                            x) mempty $ r ^. hoursInAircraftType
               li_ [] $
                 do  span_ [class_ "key"] "Hours in registration: "
                     div_ [class_ "value"] .
                       ul_ [] . Map.foldrWithKey (\y (tl, iu, dl, ic) x ->
-                        li_ [] $
-                          do  span_ [class_ "aircraftregistration"] $ fromString y
-                              ul_ [] $
-                                do  li_ [] $
-                                      do  span_ [class_ "key"] "total: "
-                                          span_ [class_ "value"] . htmlTimeAmount $ tl
-                                    li_ [] $
-                                      do  span_ [class_ "key"] "in-command under-instruction: "
-                                          span_ [class_ "value"] . htmlTimeAmount $ iu
-                                    li_ [] $
-                                      do  span_ [class_ "key"] "dual under-instruction: "
-                                          span_ [class_ "value"] . htmlTimeAmount $ dl
-                                    li_ [] $
-                                      do  span_ [class_ "key"] "in-command: "
-                                          span_ [class_ "value"] . htmlTimeAmount $ ic
-                              x) mempty $ r ^. hoursInAircraftRegistration
+                        do  li_ [] $
+                              do  span_ [class_ "aircraftregistration"] $ fromString y
+                                  ul_ [] $
+                                    do  li_ [] $
+                                          do  span_ [class_ "key"] "total: "
+                                              span_ [class_ "value"] . htmlTimeAmount $ tl
+                                        li_ [] $
+                                          do  span_ [class_ "key"] "in-command under-instruction: "
+                                              span_ [class_ "value"] . htmlTimeAmount $ iu
+                                        li_ [] $
+                                          do  span_ [class_ "key"] "dual under-instruction: "
+                                              span_ [class_ "value"] . htmlTimeAmount $ dl
+                                        li_ [] $
+                                          do  span_ [class_ "key"] "in-command: "
+                                              span_ [class_ "value"] . htmlTimeAmount $ ic
+                            x) mempty $ r ^. hoursInAircraftRegistration
               li_ [] $
                 do  span_ [class_ "key"] "Hours in Single-Engine: "
                     span_ [class_ "value"] .
@@ -3177,12 +3180,12 @@ htmlFlightTimeReport _ r =
                 do  span_ [class_ "key"] "Hours with PiC: "
                     div_ [class_ "value"] .
                       ul_ [] . Map.foldrWithKey (\a t x ->
-                        li_ [] $
-                          do  span_ [class_ "key"] $ 
-                                do  htmlAviatorShort a
-                                    ": "
-                              span_ [class_ "value"] . htmlTimeAmount $ t                                      
-                              x) mempty $ r ^. hoursWithPiC
+                        do  li_ [] $
+                              do  span_ [class_ "key"] $ 
+                                    do  htmlAviatorShort a
+                                        ": "
+                                  span_ [class_ "value"] . htmlTimeAmount $ t                                      
+                            x) mempty $ r ^. hoursWithPiC
               li_ [] $
                 do  span_ [class_ "key"] "Hours instrument in-flight: "
                     span_ [class_ "value"] .
@@ -3866,7 +3869,9 @@ htmlEntryTag (AircraftFlightEntry e _) =
                           , "-"
                           , e ^. flightpath . flightEnd . point
                           ]
-  in  a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "FLT"
+  in  do  a_ [id_ (Text.pack ('#' : lk))] ""
+          a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "FLT"
+
 htmlEntryTag (SimulatorFlightEntry e _) =
   let lk = space2dot . concat $
                           [
@@ -3875,7 +3880,8 @@ htmlEntryTag (SimulatorFlightEntry e _) =
                           , "_"
                           , e ^. simulatortype
                           ]
-  in  a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "SIM"
+  in  do  a_ [id_ (Text.pack ('#' : lk))] ""
+          a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "SIM"
 htmlEntryTag (ExamEntry e _) =
   let lk = space2dot . concat $
                           [
@@ -3884,7 +3890,8 @@ htmlEntryTag (ExamEntry e _) =
                           , "_"
                           , show (e ^. examTime . daytime)
                           ]
-  in  a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "EXM"
+  in  do  a_ [id_ (Text.pack ('#' : lk))] ""
+          a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "EXM"
 htmlEntryTag (BriefingEntry e _) =
   let lk = space2dot . concat $
                           [
@@ -3893,7 +3900,8 @@ htmlEntryTag (BriefingEntry e _) =
                           , "_"
                           , show (e ^. briefingTime . daytime)
                           ]
-  in  a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "BRF"
+  in  do  a_ [id_ (Text.pack ('#' : lk))] ""
+          a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "BRF"        
 
 htmlEntry :: 
   (AircraftFlight -> a -> Html x)
