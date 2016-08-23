@@ -33,10 +33,13 @@ library
 
   build-depends:
                     base < 5 && >= 4.8
-                    , casr-logbook
-                    , lucid
-                    , lens, digit, time, text, containers
-                    
+                    , casr-logbook >= 0.1.3 && < 0.2
+                    , lucid >= 2.9 && < 3
+                    , lens >= 4.1 && < 5
+                    , digit >= 0.2.8 && < 3
+                    , time >= 1.5 && < 1.6
+                    , text >= 1.2 && < 1.3
+
   ghc-options:
                     -Wall
 
