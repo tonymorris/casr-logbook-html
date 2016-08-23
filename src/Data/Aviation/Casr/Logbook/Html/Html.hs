@@ -2105,6 +2105,7 @@ basicinstrumentflightsim =
     "ATD-02"
     [damienboyer]
     (parttimeamount x5)
+    (parttimeamount x5)
 
 basicinstrumentflightsimMeta ::
   SimulatorFlightMeta
@@ -2620,6 +2621,20 @@ logbook1007036 =
     , AircraftFlightEntry areasolo3 areasolo3Meta
     ]
 
+strTimeAmount ::
+  TimeAmount
+  -> String
+strTimeAmount (TimeAmount h x) =
+  show h ++ "." ++ show x
+
+htmlTimeAmount ::
+  TimeAmount
+  -> Html ()
+htmlTimeAmount t =
+  span_ [] $
+    do  fromString (strTimeAmount t)
+        "hrs"
+
 ---- Reports
 
 data ExpenseReport =
@@ -2787,11 +2802,35 @@ instance Monoid SimulatorTimeReport where
 
 singleSimulatorTimeReport ::
   Entry a b c d
-  -> FlightTimeReport
+  -> SimulatorTimeReport
 singleSimulatorTimeReport (SimulatorFlightEntry fl _) =
-  undefinedv -- todo
+  SimulatorTimeReport
+    (fl ^. simulatorTime)
+    (fl ^. instrumentsimulatorTime)
 singleSimulatorTimeReport _ =
   mempty
+
+getSimulatorTimeReport ::
+  Logbook a b c d
+  -> SimulatorTimeReport
+getSimulatorTimeReport (Logbook _ (Entries es)) =
+  foldl' (\a -> mappend a . singleSimulatorTimeReport) mempty es
+ 
+htmlSimulatorTimeReport ::
+  Logbook a b c d
+  -> SimulatorTimeReport
+  -> Html ()
+htmlSimulatorTimeReport _ r =
+  div_ [class_ "simulatortimereport"] $
+    do  h3_ [class_ "simulatortimereportname"] "Simulator Time Summary Report"          
+        ul_ [] $
+          do  li_ [] $
+                do  span_ [class_ "key"] "Total Simulator Hours: "
+                    span_ [class_ "value"] . htmlTimeAmount $ r ^. hoursInstrumentSimulator
+              li_ [] $
+                do  span_ [class_ "key"] "Instrument Simulator Hours: "
+                    span_ [class_ "value"] . htmlTimeAmount $ r ^. hoursTotalSimulator
+              
 
 data FlightTimeReport =
   FlightTimeReport {
@@ -3570,20 +3609,6 @@ htmlCommand _ (Dual a) =
       span_ [class_ "commandphrase"] $ " by "
       span_ [class_ "commandaviator"] $ htmlAviatorShort a
 
-strTimeAmount ::
-  TimeAmount
-  -> String
-strTimeAmount (TimeAmount h x) =
-  show h ++ "." ++ show x
-
-htmlTimeAmount ::
-  TimeAmount
-  -> Html ()
-htmlTimeAmount t =
-  span_ [] $
-    do  fromString (strTimeAmount t)
-        "hrs"
-
 htmlTimeAmountZero ::
   TimeAmount
   -> Html ()
@@ -3695,7 +3720,7 @@ htmlSimulatorFlightName n =
 htmlSimulatorFlight ::
   SimulatorFlight
   -> Html ()
-htmlSimulatorFlight (SimulatorFlight n t y o i) =
+htmlSimulatorFlight (SimulatorFlight n t y o a i) =
   div_ [class_ "simulatorflight"] $
     do  htmlSimulatorFlightName n
         ul_ [] $
@@ -3712,6 +3737,10 @@ htmlSimulatorFlight (SimulatorFlight n t y o i) =
                       htmlAviators $ o
               li_ [] $
                 do  span_ [class_ "key"] "Amount: "
+                    span_ [class_ "value"] .
+                     htmlTimeAmount $ a
+              li_ [] $
+                do  span_ [class_ "key"] "Instrument: "
                     span_ [class_ "value"] .
                      htmlTimeAmount $ i
   
@@ -4036,26 +4065,8 @@ simulatorFlightCost ::
   -> SimulatorFlightExpense
   -> Int
 simulatorFlightCost sf (SimulatorFlightExpense perhour _) =
-  let z = sf ^. instrumentsimulatorTimeAmount
+  let z = sf ^. instrumentsimulatorTime
   in  timeAmountBy10 z * perhour
-
----- belong elsewhere
-totalDayNight ::
-  DayNight
-  -> TimeAmount
-totalDayNight (DayNight d n) =
-  d `mappend` n
-
----- belong elsewhere
-getInstructingPic ::
-  Command
-  -> Maybe Aviator
-getInstructingPic (ICUS a) =
-  Just a
-getInstructingPic (Dual a) =
-  Just a
-getInstructingPic InCommand =
-  Nothing
 
 ---- belong elsewhere
 showCentsAsDollars ::
@@ -4076,20 +4087,6 @@ showCentsAsDollars n =
   in  (if n < 0 then ('-':) else id) . pos . reverse . show . abs $ n
 
 ---- belong elsewhere
-timeAmountBy10 ::
-  TimeAmount
-  -> Int
-timeAmountBy10 (TimeAmount a b) =
-  a * 10 + digit # b
-
----- belong elsewhere
-flightPathList ::
-  FlightPath
-  -> [FlightPoint]
-flightPathList (FlightPath s x e) =
-  s : x ++ [e]
-
----- belong elsewhere
 whenEmpty ::
   Monoid a =>
   ([t] -> a)
@@ -4106,6 +4103,8 @@ htmlReports ::
   Html ()
 htmlReports =
   do  htmlFlightTimeReport logbook1007036 (getFlightTimeReport logbook1007036)
+      hr_ [] 
+      htmlSimulatorTimeReport logbook1007036 (getSimulatorTimeReport logbook1007036)
       hr_ [] 
       htmlTakeOffLanding90 logbook1007036 (takeoffslandings90 logbook1007036)
       hr_ [] 
