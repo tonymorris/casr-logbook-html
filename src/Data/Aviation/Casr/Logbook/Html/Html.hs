@@ -26,6 +26,56 @@ import qualified Data.Text as Text
 import Data.Ord
 import Text.Printf
 
+---- belong elsewhere
+showThousandCentsAsDollars ::
+  Int
+  -> String
+showThousandCentsAsDollars n =
+  let pos ::
+        String
+        -> String
+      pos [] =
+        []
+      pos [x] =
+        [x] ++ "0.0"
+      pos [x, y] =
+        [x, y] ++ ".0"
+      pos [x, y, z] =
+        [x, y, z] ++ ".0"
+      pos (x:y:z:r) =
+        [x, y, z] ++ "." ++ r
+      drop0 [] =
+        []
+      drop0 ('0':r) =
+        r
+      drop0 w =
+        w
+  in  (if n < 0 then ('-':) else id) . reverse . drop0 . pos . reverse . show . abs $ n
+
+---- belong elsewhere
+showHundredCentsAsDollars ::
+  Int
+  -> String
+showHundredCentsAsDollars n =
+  let pos ::
+        String
+        -> String
+      pos [] =
+        []
+      pos [x] =
+        [x] ++ "0.0"
+      pos [x, y] =
+        [x, y] ++ ".0"
+      pos (x:y:r) =
+        [x, y] ++ "." ++ r
+      drop0 [] =
+        []
+      drop0 ('0':r) =
+        r
+      drop0 w =
+        w
+  in  (if n < 0 then ('-':) else id) . reverse . drop0 . pos . reverse . show . abs $ n
+
 data AircraftUsageExpense =
   AircraftUsageExpense {
     _aircraftusageexpenseperhour :: Int
@@ -237,6 +287,15 @@ davidschofield =
     [x5, x8, x9, x5, x2, x2]
     [Rating "FIR II" Nothing]
 
+stevetaddeucci ::
+  Aviator
+stevetaddeucci =
+  nodobaviator
+    "Taddeucci"
+    "Steve"
+    [x0, x1, x3, x3, x7, x9, x5]
+    []
+
 damienboyer ::
   Aviator
 damienboyer =
@@ -307,6 +366,14 @@ flightone =
     "Flight One"
     (-27.566768)
     153.014955
+
+gillayts ::
+  Location
+gillayts =
+  Location
+    "Gil Layts"
+    (-27.567513)
+    153.014788
 
 aslExamArcherfield ::
   Location
@@ -2409,6 +2476,23 @@ rplrecommendationMeta =
     , vhvvoLanding
     ]
 
+englishexam ::
+  Exam
+englishexam =
+  dayonlyexam
+    "English Language Assessment Notice Form 61-9ELP"
+    gillayts
+    (fromGregorian 2016 8 20)
+    stevetaddeucci
+    7
+    7
+
+englishexamMeta ::
+  ExamMeta
+englishexamMeta =
+  ExamMeta
+    [ExamExpense 6000 "English Language Assessment Notice Form 61-9ELP"]
+
 ---- belong elsewhere
 
 circuitsatdate ::
@@ -2532,11 +2616,60 @@ logbook1007036 =
     , ExamEntry rplexam rplexamMeta
     , BriefingEntry rpltestpreparation rpltestpreparationMeta
     , AircraftFlightEntry rplrecommendation rplrecommendationMeta
+    , ExamEntry englishexam englishexamMeta
     , AircraftFlightEntry areasolo3 areasolo3Meta
     ]
 
 ---- Reports
 
+data ExpenseReport =
+  ExpenseReport {
+    _aircraftUsageExpenseTotal :: Int
+  , _aircraftLandingExpenseTotal :: Int
+  , _briefingExpenseTotal :: Int
+  , _examExpenseTotal :: Int
+  , _simulatorFlightTotal :: Int
+  } deriving (Eq, Ord, Show)
+
+makeClassy ''ExpenseReport
+
+instance Monoid ExpenseReport where
+  mempty =
+    ExpenseReport 0 0 0 0 0
+  ExpenseReport ag1 al1 b1 e1 s1 `mappend` ExpenseReport ag2 al2 b2 e2 s2 =
+    ExpenseReport (ag1 + ag2) (al1 + al2) (b1 + b2) (e1 + e2) (s1 + s2)
+
+htmlExpenseReport ::
+  Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
+  -> ExpenseReport
+  -> Html ()
+htmlExpenseReport _ (ExpenseReport ag al b e s) =
+  div_ [class_ "expensereport"] $
+    do  h3_ [class_ "expensereportname"] "Expense Report"     
+        do  ul_ [] $
+              do  li_ [] $
+                    do  span_ [class_ "key"] "Aircraft: "
+                        span_ [class_ "value"] . fromString . ('$':) . showThousandCentsAsDollars $ ag + al
+                        ul_ [] $
+                          do  li_ [] $
+                                do  span_ [class_ "key"] "Usage: "
+                                    span_ [class_ "value"] . fromString . ('$':) . showThousandCentsAsDollars $ ag
+                              li_ [] $
+                                do  span_ [class_ "key"] "Landing: "
+                                    span_ [class_ "value"] . fromString . ('$':) . showHundredCentsAsDollars $ al
+                  li_ [] $
+                    do  span_ [class_ "key"] "Briefing: "
+                        span_ [class_ "value"] . fromString . ('$':) . showThousandCentsAsDollars $ b
+                  li_ [] $
+                    do  span_ [class_ "key"] "Exam: "
+                        span_ [class_ "value"] . fromString . ('$':) . showHundredCentsAsDollars $ e
+                  li_ [] $
+                    do  span_ [class_ "key"] "Simulator: "
+                        span_ [class_ "value"] . fromString . ('$':) . showThousandCentsAsDollars $ s
+                  li_ [] $
+                    do  span_ [class_ "key"] "TOTAL: "
+                        span_ [class_ "value"] . fromString . ('$':) . showThousandCentsAsDollars $ (ag + al + b + e + s)
+                  
 data TakeOffLanding90 =
   TakeOffLanding90 {
     _takeoff1 ::
@@ -2638,61 +2771,53 @@ data FlightTimeReport =
     _flightsTotal ::
       Int
   , _hoursTotal ::
-      TimeAmount -- Hours total
+      TimeAmount 
   , _hoursTotalICUS ::
-      TimeAmount --   Hours total in-command under-instruction
+      TimeAmount 
   , _hoursTotalDual ::
-      TimeAmount --   Hours total dual under-instruction
+      TimeAmount 
   , _hoursTotalInCommand ::
-      TimeAmount --   Hours total in-command
-    -- Hours in aircraft type
-    --   Hours in aircraft type in-command under-instruction
-    --   Hours in aircraft type dual under-instruction
-    --   Hours in aircraft type in-command
+      TimeAmount 
   , _hoursInAircraftType ::
       Map String (TimeAmount, TimeAmount, TimeAmount, TimeAmount)
-    -- Hours in aircraft registration
-    --   Hours in aircraft registration in-command under-instruction
-    --   Hours in aircraft registration dual under-instruction
-    --   Hours in aircraft registration in-command
   , _hoursInAircraftRegistration ::
       Map String (TimeAmount, TimeAmount, TimeAmount, TimeAmount)
   , _hoursSingleEngine ::
-      TimeAmount -- Hours in single-engine
+      TimeAmount 
   , _hoursSingleEngineICUS ::
-      TimeAmount --   Hours in single-engine in-command under-instruction
+      TimeAmount 
   , _hoursSingleEngineDual :: 
-      TimeAmount --   Hours in single-engine dual under-instruction
+      TimeAmount 
   , _hoursSingleEngineInCommand ::
-      TimeAmount --   Hours in single-engine in-command
+      TimeAmount 
   , _hoursMultiEngine ::
-      TimeAmount -- Hours in multi-engine
+      TimeAmount 
   , _hoursMultiEngineICUS ::
-      TimeAmount --   Hours multi-engine in-command under-instruction
+      TimeAmount 
   , _hoursMultiEngineDual ::
-      TimeAmount --   Hours multi-engine dual under-instruction
+      TimeAmount 
   , _hoursMultiEngineInCommand ::
-      TimeAmount --   Hours multi-engine in-command
+      TimeAmount 
   , _hoursDay ::
-      TimeAmount -- Hours during day
+      TimeAmount 
   , _hoursDayICUS ::
-      TimeAmount --   Hours during day in-command under-instruction
+      TimeAmount 
   , _hoursDayDual ::
-      TimeAmount --   Hours during day dual under-instruction
+      TimeAmount 
   , _hoursDayInCommand ::
-      TimeAmount --   Hours during day in-command
+      TimeAmount 
   , _hoursNight ::
-      TimeAmount -- Hours during night
+      TimeAmount 
   , _hoursNightICUS ::
-      TimeAmount --   Hours during night in-command under-instruction
+      TimeAmount 
   , _hoursNightDual ::
-      TimeAmount --   Hours during night dual under-instruction
+      TimeAmount 
   , _hoursNightInCommand ::
-      TimeAmount --   Hours during night in-command
+      TimeAmount 
   , _hoursWithPiC ::
-      Map Aviator TimeAmount -- Hours with PiC
+      Map Aviator TimeAmount
   , _hoursInstrument ::
-      TimeAmount -- Hours instrument in-flight
+      TimeAmount 
   } deriving (Eq, Ord, Show)
 
 makeClassy ''FlightTimeReport
@@ -2998,17 +3123,16 @@ htmlAircraftUsageExpense ::
   AircraftFlight
   -> AircraftUsageExpense
   -> Html ()
-htmlAircraftUsageExpense fl (AircraftUsageExpense perhour name) =
-  let z = totalDayNight (fl ^. daynight)
-  in  span_ [class_ "aircraftusageexpense"] $
-        do  span_ [class_ "aircraftusageexpensecost"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
-            span_ [class_ "aircraftusageexpensephrase"] " at "
-            span_ [class_ "aircraftusageexpenseperhour"] . fromString . ('$':) . showCentsAsDollars $ perhour
-            span_ [class_ "aircraftusageexpensephrase"] " per hour"
-            when (not . null $ name) . span_ [class_ "aircraftusageexpensename"] $
-              do  " ("
-                  fromString name
-                  ")"
+htmlAircraftUsageExpense fl e@(AircraftUsageExpense perhour name) =
+  span_ [class_ "aircraftusageexpense"] $
+    do  span_ [class_ "aircraftusageexpensecost"] . fromString . ('$':) . showThousandCentsAsDollars $ aircraftUsageCost fl e
+        span_ [class_ "aircraftusageexpensephrase"] " at "
+        span_ [class_ "aircraftusageexpenseperhour"] . fromString . ('$':) . showCentsAsDollars $ perhour
+        span_ [class_ "aircraftusageexpensephrase"] " per hour"
+        when (not . null $ name) . span_ [class_ "aircraftusageexpensename"] $
+          do  " ("
+              fromString name
+              ")"
 
 htmlAircraftLandingExpense ::
   AircraftFlight
@@ -3035,17 +3159,16 @@ htmlSimulatorFlightExpense ::
   SimulatorFlight
   -> SimulatorFlightExpense
   -> Html ()
-htmlSimulatorFlightExpense sf (SimulatorFlightExpense perhour name) =
-  let z = sf ^. instrumentsimulatorTimeAmount
-  in  span_ [class_ "simulatorflightexpense"] $
-        do  span_ [class_ "simulatorflightcost"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
-            span_ [class_ "simulatorflightexpensephrase"] " at "
-            span_ [class_ "simulatorflightexpenseperhour"] . fromString . ('$':) . showCentsAsDollars $ perhour
-            span_ [class_ "simulatorflightexpensephrase"] " per hour"
-            when (not . null $ name) . span_ [class_ "simulatorflightexpensename"] $
-              do  " ("
-                  fromString name
-                  ")"
+htmlSimulatorFlightExpense sf e@(SimulatorFlightExpense perhour name) =
+  span_ [class_ "simulatorflightexpense"] $
+    do  span_ [class_ "simulatorflightcost"] . fromString . ('$':) . showThousandCentsAsDollars $ simulatorFlightCost sf e
+        span_ [class_ "simulatorflightexpensephrase"] " at "
+        span_ [class_ "simulatorflightexpenseperhour"] . fromString . ('$':) . showCentsAsDollars $ perhour
+        span_ [class_ "simulatorflightexpensephrase"] " per hour"
+        when (not . null $ name) . span_ [class_ "simulatorflightexpensename"] $
+          do  " ("
+              fromString name
+              ")"
 
 htmlExamExpense ::
   Exam
@@ -3063,17 +3186,16 @@ htmlBriefingExpense ::
   Briefing
   -> BriefingExpense
   -> Html ()
-htmlBriefingExpense br (BriefingExpense perhour name) =
-  let z = br ^. briefingTimeAmount
-  in  span_ [class_ "briefingexpense"] $
-        do  span_ [class_ "briefingexpensecost"] . fromString . ('$':) . showThousandCentsAsDollars $ timeAmountBy10 z * perhour
-            span_ [class_ "briefingexpensephrase"] " at "
-            span_ [class_ "briefingexpenseperhour"] . fromString . ('$':) . showCentsAsDollars $ perhour
-            span_ [class_ "briefingexpensephrase"] " per hour"
-            when (not . null $ name) . span_ [class_ "briefingexpensename"] $
-              do  " ("
-                  fromString name
-                  ")"
+htmlBriefingExpense br e@(BriefingExpense perhour name) =
+  span_ [class_ "briefingexpense"] $
+    do  span_ [class_ "briefingexpensecost"] . fromString . ('$':) . showThousandCentsAsDollars $ briefingCost br e
+        span_ [class_ "briefingexpensephrase"] " at "
+        span_ [class_ "briefingexpenseperhour"] . fromString . ('$':) . showCentsAsDollars $ perhour
+        span_ [class_ "briefingexpensephrase"] " per hour"
+        when (not . null $ name) . span_ [class_ "briefingexpensename"] $
+          do  " ("
+              fromString name
+              ")"
 
 htmlVisualisation ::
   AircraftFlight
@@ -3812,14 +3934,92 @@ htmlLogbookHeader _ =
               span_ [class_ "austlii"] $
                 a_ [href_ "http://www.austlii.edu.au/au/legis/cth/consol_reg/casr1998333/s61.345.html"] "austlii.edu.au"
 
----- helpers, belong elsewhere
+---- belong elsewhere
+aircraftUsageCost ::
+  HasAircraftFlight s =>
+  s
+  -> AircraftUsageExpense
+  -> Int
+aircraftUsageCost fl (AircraftUsageExpense perhour _) =
+  let z = totalDayNight (fl ^. daynight)
+  in  timeAmountBy10 z * perhour
 
+entryExpenseReport ::
+  Entry AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
+  -> ExpenseReport
+entryExpenseReport (AircraftFlightEntry fl e) =
+  let usage =
+        sum $ e ^. expenses >>= \p ->
+          case p of
+            ExpenseAircraftUsage e' -> [aircraftUsageCost fl e']
+            ExpenseAircraftLanding _ -> []
+      landing =
+        sum $ e ^. expenses >>= \p ->
+          case p of
+            ExpenseAircraftUsage _ -> []
+            ExpenseAircraftLanding l -> [l ^. aircraftlandingexpenseamount]
+  in  ExpenseReport
+        usage
+        landing
+        0
+        0
+        0
+entryExpenseReport (SimulatorFlightEntry fl e) =
+  ExpenseReport
+    0
+    0
+    0
+    0
+    (sum $ e ^. _Wrapped >>= return . simulatorFlightCost fl)
+entryExpenseReport (ExamEntry _ e) =
+  ExpenseReport
+    0
+    0
+    0
+    (sum $ e ^. _Wrapped >>= return . (^. examexpenseamount))
+    0
+entryExpenseReport (BriefingEntry br e) =
+  ExpenseReport
+    0
+    0
+    (sum $ e ^. _Wrapped >>= return . briefingCost br)
+    0
+    0
+
+logbookExpenseReport ::
+  Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
+  -> ExpenseReport
+logbookExpenseReport b =
+  foldMap entryExpenseReport (b ^. logbookentries . _Wrapped)
+
+---- belong elsewhere
+briefingCost ::
+  HasBriefing s =>
+  s
+  -> BriefingExpense
+  -> Int
+briefingCost br (BriefingExpense perhour _) =
+  let z = br ^. briefingTimeAmount
+  in  timeAmountBy10 z * perhour
+
+---- belong elsewhere
+simulatorFlightCost ::
+  HasSimulatorFlight s =>
+  s
+  -> SimulatorFlightExpense
+  -> Int
+simulatorFlightCost sf (SimulatorFlightExpense perhour _) =
+  let z = sf ^. instrumentsimulatorTimeAmount
+  in  timeAmountBy10 z * perhour
+
+---- belong elsewhere
 totalDayNight ::
   DayNight
   -> TimeAmount
 totalDayNight (DayNight d n) =
   d `mappend` n
 
+---- belong elsewhere
 getInstructingPic ::
   Command
   -> Maybe Aviator
@@ -3830,7 +4030,7 @@ getInstructingPic (Dual a) =
 getInstructingPic InCommand =
   Nothing
 
-
+---- belong elsewhere
 showCentsAsDollars ::
   Int
   -> String
@@ -3848,43 +4048,21 @@ showCentsAsDollars n =
         reverse z ++ "." ++ [y, x]
   in  (if n < 0 then ('-':) else id) . pos . reverse . show . abs $ n
 
-showThousandCentsAsDollars ::
-  Int
-  -> String
-showThousandCentsAsDollars n =
-  let pos ::
-        String
-        -> String
-      pos [] =
-        []
-      pos [x] =
-        [x] ++ "0.0"
-      pos [x, y] =
-        [x, y] ++ ".0"
-      pos [x, y, z] =
-        [x, y, z] ++ ".0"
-      pos (x:y:z:r) =
-        [x, y, z] ++ "." ++ r
-      drop0 [] =
-        []
-      drop0 ('0':r) =
-        r
-      drop0 w =
-        w
-  in  (if n < 0 then ('-':) else id) . reverse . drop0 . pos . reverse . show . abs $ n
-
+---- belong elsewhere
 timeAmountBy10 ::
   TimeAmount
   -> Int
 timeAmountBy10 (TimeAmount a b) =
   a * 10 + digit # b
 
+---- belong elsewhere
 flightPathList ::
   FlightPath
   -> [FlightPoint]
 flightPathList (FlightPath s x e) =
   s : x ++ [e]
 
+---- belong elsewhere
 whenEmpty ::
   Monoid a =>
   ([t] -> a)
@@ -3903,6 +4081,8 @@ htmlReports =
   do  htmlFlightTimeReport logbook1007036 (getFlightTimeReport logbook1007036)
       hr_ [] 
       htmlTakeOffLanding90 logbook1007036 (takeoffslandings90 logbook1007036)
+      hr_ [] 
+      htmlExpenseReport logbook1007036 (logbookExpenseReport logbook1007036)
 
 writetest ::
   IO ()
