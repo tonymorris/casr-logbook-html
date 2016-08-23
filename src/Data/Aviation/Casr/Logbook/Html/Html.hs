@@ -2660,7 +2660,8 @@ htmlExpenseReport ::
   -> Html ()
 htmlExpenseReport _ (ExpenseReport ag al b e s) =
   div_ [class_ "expensereport"] $
-    do  h3_ [class_ "expensereportname"] "Expense Report"     
+    do  a_ [href_ (Text.pack ('#' : "RPT_Expense"))] . span_ [class_ "entrytag"] $ "RPT"
+        h3_ [class_ "expensereportname"] "Expense Report"     
         do  ul_ [] $
               do  li_ [] $
                     do  span_ [class_ "key"] "Aircraft: "
@@ -2721,7 +2722,8 @@ htmlTakeOffLanding90 ::
   -> Html ()
 htmlTakeOffLanding90 _ r =
   div_ [class_ "flighttimecurrencyreport"] $
-    do  h3_ [class_ "flighttimecurrencyreportname"] "Flight Time Currency Report"                    
+    do  a_ [href_ (Text.pack ('#' : "RPT_FlightTimeCurrency"))] . span_ [class_ "entrytag"] $ "RPT"
+        h3_ [class_ "flighttimecurrencyreportname"] "Flight Time Currency Report"                    
         case r of
           Nothing ->
             span_ [class_ "flighttimenocurrency"] "NIL three take-offs and landings"
@@ -2822,7 +2824,8 @@ htmlSimulatorTimeReport ::
   -> Html ()
 htmlSimulatorTimeReport _ r =
   div_ [class_ "simulatortimereport"] $
-    do  h3_ [class_ "simulatortimereportname"] "Simulator Time Summary Report"          
+    do  a_ [href_ (Text.pack ('#' : "RPT_SimulatorTimeSummary"))] . span_ [class_ "entrytag"] $ "RPT"
+        h3_ [class_ "simulatortimereportname"] "Simulator Time Summary Report"          
         ul_ [] $
           do  li_ [] $
                 do  span_ [class_ "key"] "Total Simulator Hours: "
@@ -3038,7 +3041,9 @@ htmlFlightTimeReport ::
   -> Html ()
 htmlFlightTimeReport _ r =
   div_ [class_ "flighttimereport"] $
-    do  h3_ [class_ "flighttimereportname"] "Flight Time Summary Report"          
+    do  a_ [name_ "RPT_FlightTimeSummary"] ""
+        a_ [href_ (Text.pack "#RPT_FlightTimeSummary")] . span_ [class_ "entrytag"] $ "RPT"
+        h3_ [class_ "flighttimereportname"] "Flight Time Summary Report"          
         ul_ [] $
           do  li_ [] $
                 do  span_ [class_ "key"] "Total Flights: "
@@ -3062,7 +3067,7 @@ htmlFlightTimeReport _ r =
                                   htmlTimeAmount $ r ^. hoursTotalInCommand
               li_ [] $
                 do  span_ [class_ "key"] "Hours in type: "
-                    span_ [class_ "value"] .
+                    div_ [class_ "value"] .
                       ul_ [] . Map.foldrWithKey (\y (tl, iu, dl, ic) x ->
                         li_ [] $
                           do  span_ [class_ "aircrafttype"] $ fromString y
@@ -3082,7 +3087,7 @@ htmlFlightTimeReport _ r =
                               x) mempty $ r ^. hoursInAircraftType
               li_ [] $
                 do  span_ [class_ "key"] "Hours in registration: "
-                    span_ [class_ "value"] .
+                    div_ [class_ "value"] .
                       ul_ [] . Map.foldrWithKey (\y (tl, iu, dl, ic) x ->
                         li_ [] $
                           do  span_ [class_ "aircraftregistration"] $ fromString y
@@ -3170,7 +3175,7 @@ htmlFlightTimeReport _ r =
                                   htmlTimeAmount $ r ^. hoursNightInCommand
               li_ [] $
                 do  span_ [class_ "key"] "Hours with PiC: "
-                    span_ [class_ "value"] .
+                    div_ [class_ "value"] .
                       ul_ [] . Map.foldrWithKey (\a t x ->
                         li_ [] $
                           do  span_ [class_ "key"] $ 
