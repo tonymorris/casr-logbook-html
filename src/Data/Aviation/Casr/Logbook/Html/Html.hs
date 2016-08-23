@@ -23,6 +23,7 @@ import qualified Data.Map as Map
 import Data.Maybe
 import Data.Monoid hiding (Dual)
 import qualified Data.Text as Text
+import Data.Ord
 import Text.Printf
 
 data AircraftUsageExpense =
@@ -2376,7 +2377,7 @@ rplrecommendation =
     vhafr
     clintdudman
     (day 1 x3)
-    (directcircuit (pointatdate "YBAF" (fromGregorian 2016 8 18)))
+    (circuitsatdate "YBAF" 3 (fromGregorian 2016 8 18))
     (parttimeamount x3)
 
 rplrecommendationMeta ::
@@ -2408,14 +2409,27 @@ rplrecommendationMeta =
     , vhvvoLanding
     ]
 
+---- belong elsewhere
+
+circuitsatdate ::
+  String
+  -> Int
+  -> Day
+  -> FlightPath
+circuitsatdate x n d =
+  FlightPath
+    (pointatdate x d)
+    (replicate n (pointatdate x d))
+    (pointatdate x d)
+
 areasolo3 ::
   AircraftFlight
 areasolo3 =
   noif_commandonlyflight
     "Area Solo"
     vhafr
-    (day 1 x1)
-    (directcircuit (pointatdate "YBAF" (fromGregorian 2016 8 22)))    
+    (day 1 x1)    
+    (circuitsatdate "YBAF" 3 (fromGregorian 2016 8 22))
     
 areasolo3Meta ::
   AircraftFlightMeta
@@ -2522,6 +2536,102 @@ logbook1007036 =
     ]
 
 ---- Reports
+
+data TakeOffLanding90 =
+  TakeOffLanding90 {
+    _takeoff1 ::
+      FlightPoint
+  , _takeoff2 ::
+      FlightPoint
+  , _takeoff3 ::
+      FlightPoint
+  , _landing1 ::
+      FlightPoint
+  , _landing2 ::
+      FlightPoint
+  , _landing3 ::
+      FlightPoint
+  , _currency90 ::
+      Day
+  }
+  deriving (Eq, Ord, Show)
+
+makeClassy ''TakeOffLanding90
+
+htmlFlightPointDay ::
+  FlightPoint
+  -> Html ()
+htmlFlightPointDay p =
+  let j = p ^. landingTime . daytime
+  in  do  span_ [class_ "currencyflightpointday"] . fromString . show $ j
+          " "
+          span_ [class_ "currencyflightpointpoint"] . fromString $ p ^. point
+
+htmlTakeOffLanding90 ::
+  Logbook a b c d
+  -> Maybe TakeOffLanding90
+  -> Html ()
+htmlTakeOffLanding90 _ r =
+  div_ [class_ "flighttimecurrencyreport"] $
+    do  h3_ [class_ "flighttimecurrencyreportname"] "Flight Time Currency Report"                    
+        case r of
+          Nothing ->
+            span_ [class_ "flighttimenocurrency"] "NIL three take-offs and landings"
+          Just x ->
+            do  ul_ [] $
+                  do  li_ [] $
+                        do  span_ [class_ "key"] "Three most recent take-offs"
+                            ol_ [] $
+                              do  li_ [] $
+                                    span_ [class_ "value"] (htmlFlightPointDay (x ^. takeoff1))
+                                  li_ [] $
+                                    span_ [class_ "value"] (htmlFlightPointDay (x ^. takeoff2))
+                                  li_ [] $
+                                    span_ [class_ "value"] (htmlFlightPointDay (x ^. takeoff3))
+                      li_ [] $
+                        do  span_ [class_ "key"] "Three most recent landings"
+                            ol_ [] $
+                              do  li_ [] $
+                                    span_ [class_ "value"] (htmlFlightPointDay (x ^. landing1))
+                                  li_ [] $
+                                    span_ [class_ "value"] (htmlFlightPointDay (x ^. landing2))
+                                  li_ [] $
+                                    span_ [class_ "value"] (htmlFlightPointDay (x ^. landing3))
+                      li_ [] $
+                        do  span_ [class_ "key"] "90-day currency: "
+                            span_ [class_ "value"] . fromString . show $ x ^. currency90
+
+takeofflanding ::
+  Entry a b c d
+  -> ([FlightPoint], [FlightPoint])
+takeofflanding (AircraftFlightEntry fl _) =
+  let p = fl ^. flightpath
+      i = p ^. flightIntermediate
+  in  (p ^. flightStart : i, i ++ [p ^. flightEnd])
+takeofflanding _ =
+  ([], [])
+
+takeoffslandings90 ::
+  Logbook a b c d
+  -> Maybe TakeOffLanding90
+takeoffslandings90 b =
+  let (t, l) = foldr
+                (\a (t', l') -> let (u', m') = takeofflanding a
+                              in  (t' ++ u', m' ++ l'))
+                ([], []) (b ^. logbookentries . _Wrapped)
+      revsort = sortBy (flip (comparing (^. landingTime)))
+      (u, m) = (revsort t, revsort l)
+  in  case u of
+        t1:t2:t3:_ ->
+          case m of
+            l1:l2:l3:_ ->
+              let tt = t3 ^. landingTime . daytime
+                  lt = l3 ^. landingTime . daytime
+              in  Just (TakeOffLanding90 t1 t2 t3 l1 l2 l3 (addDays 90 (tt `min` lt)))
+            _ ->
+              Nothing
+        _ ->
+          Nothing
 
 data FlightTimeReport =
   FlightTimeReport {
@@ -3704,7 +3814,6 @@ htmlLogbookHeader _ =
 
 ---- helpers, belong elsewhere
 
-
 totalDayNight ::
   DayNight
   -> TimeAmount
@@ -3788,9 +3897,15 @@ whenEmpty f x =
 
 ---- Test
 
+htmlReports ::
+  Html ()
+htmlReports =
+  do  htmlFlightTimeReport logbook1007036 (getFlightTimeReport logbook1007036)
+      hr_ [] 
+      htmlTakeOffLanding90 logbook1007036 (takeoffslandings90 logbook1007036)
 
 writetest ::
   IO ()
 writetest =
-  renderToFile "/tmp/z.html" (htmlLogbookDocument htmlAircraftFlightMeta htmlSimulatorFlightMeta htmlExamMeta htmlBriefingMeta (htmlFlightTimeReport logbook1007036 (getFlightTimeReport logbook1007036)) logbook1007036)
+  renderToFile "/tmp/z.html" (htmlLogbookDocument htmlAircraftFlightMeta htmlSimulatorFlightMeta htmlExamMeta htmlBriefingMeta htmlReports logbook1007036)
 
