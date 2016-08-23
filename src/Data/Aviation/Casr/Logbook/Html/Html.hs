@@ -4123,8 +4123,15 @@ htmlReports =
       hr_ [] 
       htmlExpenseReport logbook1007036 (logbookExpenseReport logbook1007036)
 
+htmlLogbookDocumentMeta ::
+  Html ()
+  -> Logbook AircraftFlightMeta SimulatorFlightMeta ExamMeta BriefingMeta
+  -> Html ()
+htmlLogbookDocumentMeta =
+  htmlLogbookDocument htmlAircraftFlightMeta htmlSimulatorFlightMeta htmlExamMeta htmlBriefingMeta
+
 writetest ::
   IO ()
 writetest =
-  renderToFile "/tmp/z.html" (htmlLogbookDocument htmlAircraftFlightMeta htmlSimulatorFlightMeta htmlExamMeta htmlBriefingMeta htmlReports logbook1007036)
+  renderToFile "/tmp/z.html" (htmlLogbookDocumentMeta htmlReports logbook1007036)
 
