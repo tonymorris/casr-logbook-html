@@ -49,7 +49,7 @@ import Control.Applicative((*>))
 import Control.Category((.), id)
 import Control.Lens((^.))
 import Control.Monad(when, (=<<), (>>=))
-import Data.Aviation.Casr.Logbook(
+import Data.Aviation.Casr.Logbook.Types(
     arn
   , firstname
   , surname
