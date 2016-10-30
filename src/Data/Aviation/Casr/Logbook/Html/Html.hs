@@ -556,7 +556,7 @@ htmlEntryTag (AircraftFlightEntry e _) =
                           , "-"
                           , e ^. flightpath . flightEnd . point
                           ]
-  in  do  a_ [id_ (Text.pack ('#' : lk))] ""
+  in  do  a_ [id_ (Text.pack lk)] ""
           a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "FLT"
 
 htmlEntryTag (SimulatorFlightEntry e _) =
@@ -567,7 +567,7 @@ htmlEntryTag (SimulatorFlightEntry e _) =
                           , "_"
                           , e ^. simulatortype
                           ]
-  in  do  a_ [id_ (Text.pack ('#' : lk))] ""
+  in  do  a_ [id_ (Text.pack lk)] ""
           a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "SIM"
 htmlEntryTag (ExamEntry e _) =
   let lk = space2dot . concat $
@@ -577,7 +577,7 @@ htmlEntryTag (ExamEntry e _) =
                           , "_"
                           , show (e ^. examTime . daytime)
                           ]
-  in  do  a_ [id_ (Text.pack ('#' : lk))] ""
+  in  do  a_ [id_ (Text.pack lk)] ""
           a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "EXM"
 htmlEntryTag (BriefingEntry e _) =
   let lk = space2dot . concat $
@@ -587,7 +587,7 @@ htmlEntryTag (BriefingEntry e _) =
                           , "_"
                           , show (e ^. briefingTime . daytime)
                           ]
-  in  do  a_ [id_ (Text.pack ('#' : lk))] ""
+  in  do  a_ [id_ (Text.pack lk)] ""
           a_ [href_ (Text.pack ('#' : lk))] . span_ [class_ "entrytag"] $ "BRF"        
 
 htmlEntry :: 
